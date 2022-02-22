@@ -1,0 +1,14 @@
+schema: ./annict-schema.gql
+documents: ./gql-documents/*.gql
+config:
+  namingConvention: ./gqlNaming.js
+generates:
+  ./src/annictGql.ts:
+    plugins:
+      - add:
+          content: "/* eslint-disable */"
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      avoidOptionals: true
