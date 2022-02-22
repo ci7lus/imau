@@ -6,6 +6,7 @@ import {
   GlobalStyles,
   Text,
   Space,
+  Anchor,
 } from "@mantine/core"
 import { QueryClientProvider } from "react-query"
 import { Main } from "./components/Main"
@@ -19,7 +20,9 @@ export const App = () => {
         <GlobalStyles />
         <Header height={60} padding="md">
           <Container>
-            <Text size="lg">imau</Text>
+            <Anchor href="/">
+              <Text size="lg">imau</Text>
+            </Anchor>
           </Container>
         </Header>
         <Container>

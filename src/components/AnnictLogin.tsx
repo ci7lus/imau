@@ -12,7 +12,7 @@ export const AnnictLogin = ({
   setAnnictToken: (s: string) => void
 }) => {
   const [redirectUrl, setRedirectUrl] = useLocalStorageValue({
-    key: "REDIRECT_URL",
+    key: "ANNICT_REDIRECT_URL",
     defaultValue: "" as string,
   })
   const authUrl = useMemo(() => {
@@ -51,7 +51,7 @@ export const AnnictLogin = ({
       })
       .then((data) => {
         setAnnictToken(data.data.access_token)
-        location.search = ""
+        history.replaceState({}, document.title, "/")
       })
   }, [])
 
