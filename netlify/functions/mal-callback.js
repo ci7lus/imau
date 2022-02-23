@@ -5,8 +5,8 @@ exports.handler = async (event, context) => {
   const { code, state } = event.queryStringParameters
   if (typeof code !== "string" || typeof state !== "string") {
     return {
-      statusCode: 400,
-      body: "Bad request",
+      statusCode: 200,
+      body: "",
     }
   }
   const cookies = cookie.parse(event.headers.cookie || "")
