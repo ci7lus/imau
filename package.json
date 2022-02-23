@@ -45,6 +45,7 @@
     "@mantine/core": "^3.6.9",
     "@mantine/hooks": "^3.6.9",
     "axios": "^0.26.0",
+    "cookie": "^0.4.2",
     "graphql": "^16.3.0",
     "mal-ts": "^1.0.1",
     "react": "^17.0.2",

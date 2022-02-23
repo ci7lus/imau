@@ -1,6 +1,4 @@
 import { Button, SimpleGrid } from "@mantine/core"
-import { useLocalStorageValue } from "@mantine/hooks"
-import axios from "axios"
 import { useEffect, useMemo } from "react"
 import { AnnictUserInfo } from "./AnnictUserInfo"
 
@@ -11,48 +9,30 @@ export const AnnictLogin = ({
   annictToken: string
   setAnnictToken: (s: string) => void
 }) => {
-  const [redirectUrl, setRedirectUrl] = useLocalStorageValue({
-    key: "ANNICT_REDIRECT_URL",
-    defaultValue: "" as string,
-  })
   const authUrl = useMemo(() => {
-    if (typeof import.meta.env.VITE_ANNICT_CLIENT_ID !== "string") {
+    const ANNICT_CLIENT_ID = import.meta.env.VITE_ANNICT_CLIENT_ID
+    const ANNICT_REDIRECT_URL = import.meta.env.VITE_ANNICT_REDIRECT_URL
+    if (
+      typeof ANNICT_CLIENT_ID !== "string" ||
+      typeof ANNICT_REDIRECT_URL !== "string"
+    ) {
       return
     }
     const url = new URL(
       "https://api.annict.com/oauth/authorize?response_type=code"
     )
-    url.searchParams.set("client_id", import.meta.env.VITE_ANNICT_CLIENT_ID)
-    const callbackUrl = new URL(location.href)
-    for (const param of ["code", "state"]) {
-      callbackUrl.searchParams.delete(param)
-    }
-    callbackUrl.searchParams.set("callback", "annict")
-    url.searchParams.set("redirect_uri", callbackUrl.href)
-    setRedirectUrl(callbackUrl.href)
+    url.searchParams.set("client_id", ANNICT_CLIENT_ID)
+    url.searchParams.set("redirect_uri", ANNICT_REDIRECT_URL)
     return url.href
   }, [])
   useEffect(() => {
     const url = new URL(location.href)
-    if (url.searchParams.get("callback") !== "annict") {
-      return
-    }
-    const code = url.searchParams.get("code")
+    const code = url.searchParams.get("annict_access_token")
     if (!code) {
       return
     }
-    axios
-      .post<{ access_token: string }>("https://api.annict.com/oauth/token", {
-        grant_type: "authorization_code",
-        code,
-        client_id: import.meta.env.VITE_ANNICT_CLIENT_ID,
-        client_secret: import.meta.env.VITE_ANNICT_CLIENT_SECRET,
-        redirect_uri: redirectUrl,
-      })
-      .then((data) => {
-        setAnnictToken(data.data.access_token)
-        history.replaceState({}, document.title, "/")
-      })
+    setAnnictToken(code)
+    history.replaceState({}, document.title, "/")
   }, [])
 
   return (
