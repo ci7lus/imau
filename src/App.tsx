@@ -29,6 +29,17 @@ export const App = () => {
           <Space h="md" />
           <Main />
         </Container>
+        <Space h="md" />
+        <Container>
+          <Text size="sm">imau made with ❤️.</Text>
+          <Anchor
+            size="sm"
+            href="https://github.com/ci7lus/imau"
+            target="_blank"
+          >
+            Source code
+          </Anchor>
+        </Container>
       </MantineProvider>
     </QueryClientProvider>
   )
