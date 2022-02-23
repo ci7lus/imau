@@ -2,6 +2,7 @@ import { SimpleGrid, Space } from "@mantine/core"
 import { useLocalStorageValue } from "@mantine/hooks"
 import { AnnictLogin } from "./AnnictLogin"
 import { FirstView } from "./FirstView"
+import { ListLibrary } from "./ListLibrary"
 import { MALLogin } from "./MALLogin"
 
 export const Main = () => {
@@ -27,6 +28,13 @@ export const Main = () => {
           setMalAccessToken={setMalAccessToken}
         ></MALLogin>
       </SimpleGrid>
+      <Space h="lg" />
+      {annictToken && (
+        <ListLibrary
+          annictAccessToken={annictToken}
+          malAccessToken={malAccessToken}
+        />
+      )}
     </>
   )
 }

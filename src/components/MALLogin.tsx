@@ -81,7 +81,7 @@ export const MALLogin = ({
 
   return (
     <SimpleGrid>
-      <Button component="a" href={authUrl} color="pink">
+      <Button component="a" href={authUrl} color="blue">
         {malAccessToken && "(Re)"}Login with MAL
       </Button>
       {malAccessToken && <MALUserInfo malAccessToken={malAccessToken} />}
