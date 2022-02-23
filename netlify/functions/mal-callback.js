@@ -2,7 +2,16 @@ const axios = require("axios")
 const cookie = require("cookie")
 
 exports.handler = async (event, context) => {
-  const { code, state } = event.queryStringParameters
+  const { code, state, error } = event.queryStringParameters
+  if (typeof error === "string") {
+    return {
+      statusCode: 403,
+      body: "access denied.",
+      headers: {
+        Location: "/",
+      },
+    }
+  }
   if (typeof code !== "string" || typeof state !== "string") {
     return {
       statusCode: 400,
