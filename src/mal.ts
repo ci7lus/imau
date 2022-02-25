@@ -32,27 +32,19 @@ export class MALAPI {
     return this.client.get<{ name: string; picture: string }>("/users/@me")
   }
 
-  updateAnimeStatus({
-    id,
-    status,
-    is_rewatching,
-    score,
-    num_episodes_watched,
-    priority,
-  }: {
+  updateAnimeStatus(options: {
     id: string
     status: MALAnimeStatus
     is_rewatching?: boolean
     score?: number
-    num_episodes_watched?: number
+    num_watched_episodes?: number
     priority?: number
   }) {
-    return this.client.patch(`/anime/${id}/my_list_status`, {
-      status,
-      is_rewatching,
-      score,
-      num_episodes_watched,
-      priority,
-    })
+    const payload = new URLSearchParams(
+      Object.entries(options)
+        .filter(([k, v]) => v && k !== "id")
+        .map(([k, v]) => [k, v.toString()])
+    )
+    return this.client.patch(`/anime/${options.id}/my_list_status`, payload)
   }
 }

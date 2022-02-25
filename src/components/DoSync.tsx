@@ -47,15 +47,14 @@ export const DoSync = ({
                 await mal.updateAnimeStatus({
                   id: work.malId,
                   status: ANNICT_TO_MAL_STATUS_MAP[work.status],
-                  num_episodes_watched: work.noEpisodes
-                    ? undefined
+                  num_watched_episodes: work.noEpisodes
+                    ? 1
                     : work.watchedEpisodeCount,
                 })
                 await new Promise<void>((res) => {
                   setTimeout(() => res(), 500)
                 })
                 setSuccessCount((i) => i + 1)
-                return
               } catch (error) {
                 console.error(error)
                 setFailedWorks((works) => [...works, work])
