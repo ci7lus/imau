@@ -20,7 +20,6 @@ exports.handler = async (event, context) => {
   }
   const cookies = cookie.parse(event.headers.cookie || "")
   const challange = cookies.challlange
-  console.log(challange)
   if (!challange) {
     return {
       statusCode: 400,
@@ -29,17 +28,19 @@ exports.handler = async (event, context) => {
   }
   const result = await axios.post(
     "https://myanimelist.net/v1/oauth2/token",
-    Object.entries({
+    new URLSearchParams({
       grant_type: "authorization_code",
       code,
       client_id: process.env.VITE_MAL_CLIENT_ID,
       client_secret: process.env.MAL_CLIENT_SECRET,
       redirect_uri: process.env.VITE_MAL_REDIRECT_URL,
       code_verifier: challange,
-    })
-      .map(([k, v]) => [k, v].join("="))
-      .join("&"),
-    { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    }),
+    {
+      headers: {
+        "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
+      },
+    }
   )
   return {
     statusCode: 301,
