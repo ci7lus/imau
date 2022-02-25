@@ -4,6 +4,7 @@ import { generateGqlClient } from "../annictApiEntry"
 import { queryLibraryQuery, StatusState } from "../annictGql"
 import { WATCH_STATUS_MAP } from "../constants"
 import { AnimeWork } from "../types"
+import { sleep } from "../utils"
 
 export const LibraryFetchButton = ({
   annictAccessToken,
@@ -86,6 +87,7 @@ export const LibraryFetchButton = ({
             if (!after || abortRef.current) {
               break
             }
+            await sleep(500)
           }
         } finally {
           setIsFetching(false)

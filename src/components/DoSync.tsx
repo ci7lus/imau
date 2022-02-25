@@ -1,7 +1,9 @@
 import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
 import { useState } from "react"
+import { StatusState } from "../annictGql"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
 import { AnimeWork } from "../types"
+import { sleep } from "../utils"
 
 export const DoSync = ({
   checks,
@@ -48,20 +50,18 @@ export const DoSync = ({
                   id: work.malId,
                   status: ANNICT_TO_MAL_STATUS_MAP[work.status],
                   num_watched_episodes: work.noEpisodes
-                    ? 1
+                    ? work.status === StatusState.WATCHED
+                      ? 1
+                      : undefined
                     : work.watchedEpisodeCount,
                 })
-                await new Promise<void>((res) => {
-                  setTimeout(() => res(), 500)
-                })
+                await sleep(500)
                 setSuccessCount((i) => i + 1)
               } catch (error) {
                 console.error(error)
                 setFailedWorks((works) => [...works, work])
                 setFailedCount((i) => i + 1)
-                await new Promise<void>((res) => {
-                  setTimeout(() => res(), 500)
-                })
+                await sleep(500)
               }
             }
             setProcessing(null)

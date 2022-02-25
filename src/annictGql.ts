@@ -1137,12 +1137,7 @@ export type getMeQuery = {
 export const queryLibraryDocument = gql`
   query queryLibrary($state: StatusState!, $after: String) {
     viewer {
-      works(
-        state: $state
-        first: 10
-        orderBy: { field: SEASON, direction: ASC }
-        after: $after
-      ) {
+      works(state: $state, first: 50, after: $after) {
         nodes {
           id
           annictId
