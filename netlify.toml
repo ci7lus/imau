@@ -1,8 +1,4 @@
 [[redirects]]
-    from = "/mal_v1/*"
-    to = "https://myanimelist.net/v1/:splat"
-    status = 200
-[[redirects]]
     from = "/mal/*"
     to = "https://api.myanimelist.net/v2/:splat"
     status = 200
