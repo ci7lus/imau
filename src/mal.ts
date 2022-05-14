@@ -8,6 +8,15 @@ export type MALAnimeStatus =
   | "dropped"
   | "plan_to_watch"
 
+export type MALAnimeNode = {
+  id: number
+  title: string
+}
+
+export type MALListStatus = {
+  status: MALAnimeStatus
+}
+
 export const ANNICT_TO_MAL_STATUS_MAP: {
   [key in keyof typeof StatusState]: MALAnimeStatus
 } = {
@@ -46,5 +55,19 @@ export class MALAPI {
         .map(([k, v]) => [k, v.toString()])
     )
     return this.client.patch(`/anime/${options.id}/my_list_status`, payload)
+  }
+
+  getAnimeStatuses(params: {
+    status: MALAnimeStatus
+    sort: "anime_start_date"
+    limit: number
+    offset: number
+  }) {
+    return this.client.get<{
+      data: { node: MALAnimeNode; list_status: MALListStatus }[]
+      paging: { next: string }
+    }>("/users/@me/animelist", {
+      params,
+    })
   }
 }

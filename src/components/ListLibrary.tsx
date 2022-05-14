@@ -4,6 +4,7 @@ import { StatusState } from "../annictGql"
 import { AnimeWork } from "../types"
 import { DoSync } from "./DoSync"
 import { LibraryFetchButton } from "./LibraryFetchButton"
+import { ReverseSync } from "./ReverseSync"
 import { WorkTable } from "./WorkTable"
 
 export const ListLibrary = ({
@@ -18,6 +19,13 @@ export const ListLibrary = ({
 
   const isEveryChecked = useMemo(
     () => Array.from(works.values()).every((work) => checks.has(work.annictId)),
+    [works]
+  )
+  const watching = useMemo(
+    () =>
+      Array.from(works.values()).filter(
+        (work) => work.status === StatusState.WATCHING
+      ),
     [works]
   )
   return (
@@ -56,7 +64,11 @@ export const ListLibrary = ({
         readOnly={true}
       ></Checkbox>
       <Space h="sm" />
-      <WorkTable works={works} checks={checks} setChecks={setChecks} />
+      <WorkTable
+        works={Array.from(works.values())}
+        checks={checks}
+        setChecks={setChecks}
+      />
       {malAccessToken && 0 < checks.size && (
         <>
           <Space h="xl" />
@@ -66,6 +78,10 @@ export const ListLibrary = ({
             malAccessToken={malAccessToken}
           />
         </>
+      )}
+      <Space h="md" />
+      {malAccessToken && watching.length !== 0 && (
+        <ReverseSync works={watching} malAccessToken={malAccessToken} />
       )}
       <Space h="xl" />
     </>

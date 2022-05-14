@@ -7,7 +7,7 @@ export const WorkTable = ({
   checks,
   setChecks,
 }: {
-  works: Map<number, AnimeWork>
+  works: AnimeWork[]
   checks: Set<number>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
 }) => {
@@ -23,7 +23,7 @@ export const WorkTable = ({
         </tr>
       </thead>
       <tbody>
-        {Array.from(works.values()).map((work) => (
+        {works.map((work) => (
           <tr key={work.annictId}>
             <td>
               <Checkbox
