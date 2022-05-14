@@ -1,12 +1,12 @@
 {
   "name": "imau",
   "version": "1.0.0",
-  "description": "My project template for TypeScript.",
+  "description": "Sync your viewing status from Annict to MAL to play AMQ (AnimeMusicQuiz).",
   "author": "ci7lus <7887955+ci7lus@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:ci7lus/imau.git"
   },
   "scripts": {
     "dev": "vite",
