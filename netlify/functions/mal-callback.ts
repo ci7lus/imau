@@ -1,7 +1,8 @@
-const axios = require("axios")
-const cookie = require("cookie")
+import { Handler } from "@netlify/functions"
+import axios from "axios"
+import cookie from "cookie"
 
-exports.handler = async (event, context) => {
+const handler: Handler = async (event) => {
   const { code, state, error } = event.queryStringParameters
   if (typeof error === "string") {
     return {
@@ -49,3 +50,5 @@ exports.handler = async (event, context) => {
     },
   }
 }
+
+export { handler }
