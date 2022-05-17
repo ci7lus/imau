@@ -1,29 +1,29 @@
 import { Anchor, Checkbox, Table, Text } from "@mantine/core"
 import { WATCH_STATUS_MAP } from "../constants"
-import { AnimeWork } from "../types"
+import { MAL_TO_ANNICT_STATUS_MAP } from "../mal"
+import { StatusDiff } from "../types"
 
-export const WorkTable = ({
-  works,
+export const DiffTable = ({
+  diffs,
   checks,
   setChecks,
 }: {
-  works: Map<number, AnimeWork>
+  diffs: StatusDiff[]
   checks: Set<number>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
 }) => {
   return (
-    <Table>
+    <Table striped highlightOnHover>
       <thead>
         <tr>
           <th>Include?</th>
           <th>Title</th>
-          <th>Watched episodes</th>
-          <th>Status</th>
-          <th>MAL ID</th>
+          <th>Annict</th>
+          <th>MAL</th>
         </tr>
       </thead>
       <tbody>
-        {Array.from(works.values()).map((work) => (
+        {diffs.map(({ work, mal }) => (
           <tr key={work.annictId}>
             <td>
               <Checkbox
@@ -48,38 +48,40 @@ export const WorkTable = ({
                 href={`https://annict.com/works/${work.annictId}`}
                 target="_blank"
               >
-                {work.title}
+                {`${work.title} (${work.annictId})`}
               </Anchor>
-            </td>
-            <td>
-              {work.noEpisodes ? (
-                <Text size="sm" color="gray">
-                  No episodes
-                </Text>
-              ) : (
-                work.watchedEpisodeCount
-              )}
-            </td>
-            <td>{WATCH_STATUS_MAP[work.status]}</td>
-            <td>
-              {work.malId ? (
+
+              <>
+                <br />
                 <Anchor
                   href={`https://myanimelist.net/anime/${work.malId}`}
                   target="_blank"
+                  size="sm"
                 >
-                  {work.malId}
+                  {mal
+                    ? `${mal?.title} (${work.malId})`
+                    : `https://myanimelist.net/anime/${work.malId}`}
                 </Anchor>
-              ) : (
-                <Anchor
-                  href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                    work.title
-                  )}&cat=all`}
-                  target="_blank"
-                  color="pink"
-                >
-                  Search in MAL
-                </Anchor>
-              )}
+              </>
+            </td>
+            <td>
+              <Text>
+                {WATCH_STATUS_MAP[work.status]}
+                {!work.noEpisodes && ` (${work.watchedEpisodeCount})`}
+              </Text>
+            </td>
+            <td>
+              <Text>
+                {mal ? (
+                  `${WATCH_STATUS_MAP[MAL_TO_ANNICT_STATUS_MAP[mal.status]]} (${
+                    mal.watchedEpisodeCount
+                  })`
+                ) : (
+                  <Text size="sm" color="gray">
+                    No status
+                  </Text>
+                )}
+              </Text>
             </td>
           </tr>
         ))}

@@ -2,16 +2,18 @@ import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
 import { useState } from "react"
 import { StatusState } from "../annictGql"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
-import { AnimeWork } from "../types"
+import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
 export const DoSync = ({
   checks,
-  works,
+  setChecks,
+  diffs,
   malAccessToken,
 }: {
   checks: number[]
-  works: Map<number, AnimeWork>
+  setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
+  diffs: StatusDiff[]
   malAccessToken: string
 }) => {
   const [isStarted, setIsStarted] = useState(false)
@@ -36,10 +38,11 @@ export const DoSync = ({
             setFailedWorks([])
             setIsStarted(true)
             for (const annictId of checks) {
-              const work = works.get(annictId)
-              if (!work) {
+              const diff = diffs.find(({ work }) => work.annictId === annictId)
+              if (!diff) {
                 continue
               }
+              const { work } = diff
               if (!work.malId) {
                 setSuccessCount((i) => i + 1)
                 continue
@@ -57,6 +60,11 @@ export const DoSync = ({
                 })
                 await sleep(500)
                 setSuccessCount((i) => i + 1)
+                setChecks((checks) => {
+                  const copied = Object.assign([], checks)
+                  copied.delete(work.annictId)
+                  return copied
+                })
               } catch (error) {
                 console.error(error)
                 setFailedWorks((works) => [...works, work])

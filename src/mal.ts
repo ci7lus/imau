@@ -19,6 +19,29 @@ export const ANNICT_TO_MAL_STATUS_MAP: {
   WATCHED: "completed",
 }
 
+export const MAL_TO_ANNICT_STATUS_MAP: {
+  [key in MALAnimeStatus]: keyof typeof StatusState
+} = {
+  watching: StatusState.WATCHING,
+  completed: StatusState.WATCHED,
+  on_hold: StatusState.ON_HOLD,
+  dropped: StatusState.STOP_WATCHING,
+  plan_to_watch: StatusState.WANNA_WATCH,
+}
+
+export type MALAnimeNode = {
+  id: number
+  title: string
+}
+
+export type MALListStatus = {
+  node: MALAnimeNode
+  list_status: {
+    status: MALAnimeStatus
+    num_episodes_watched: number
+  }
+}
+
 export class MALAPI {
   public client: AxiosInstance
   constructor(public accessToken: string) {
@@ -46,5 +69,20 @@ export class MALAPI {
         .map(([k, v]) => [k, v.toString()])
     )
     return this.client.patch(`/anime/${options.id}/my_list_status`, payload)
+  }
+
+  getAnimeStatuses(params: {
+    status?: MALAnimeStatus
+    sort?: "anime_start_date"
+    limit?: number
+    offset?: number
+    fields?: "list_status"
+  }) {
+    return this.client.get<{
+      data: MALListStatus[]
+      paging: { next: string }
+    }>("/users/@me/animelist", {
+      params,
+    })
   }
 }
