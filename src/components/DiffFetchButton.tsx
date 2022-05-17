@@ -90,10 +90,12 @@ export const DiffFetchButton: React.FC<{
                     if (!work || !work.annictId || !work.title) {
                       return
                     }
-                    return {
+                    const w: AnimeWork = {
                       annictId: work.annictId,
                       malId: work.malAnimeId,
                       title: work.title,
+                      titleEn: work.titleEn || null,
+                      titleRo: work.titleRo || null,
                       noEpisodes: work.noEpisodes,
                       watchedEpisodeCount:
                         work?.episodes?.nodes?.filter(
@@ -101,6 +103,7 @@ export const DiffFetchButton: React.FC<{
                         ).length ?? 0,
                       status,
                     }
+                    return w
                   })
                   .filter((work): work is AnimeWork => !!work) || []
               works.push(...structedWorks)

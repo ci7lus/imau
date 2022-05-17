@@ -5,6 +5,8 @@ query queryLibrary($state: StatusState!, $after: String) {
         id
         annictId
         malAnimeId
+        titleEn
+        titleRo
         title
         noEpisodes
         episodes {

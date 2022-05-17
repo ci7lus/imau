@@ -1,4 +1,4 @@
-import { Anchor, Table, Text } from "@mantine/core"
+import { Anchor, Grid, List, Table, Text } from "@mantine/core"
 import { WATCH_STATUS_MAP } from "../constants"
 import { AnimeWork } from "../types"
 
@@ -12,7 +12,7 @@ export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
         </tr>
       </thead>
       <tbody>
-        {Array.from(works.values()).map((work) => (
+        {works.map((work) => (
           <tr key={work.annictId}>
             <td>
               <Anchor
@@ -22,16 +22,46 @@ export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
                 {`${work.title} (${work.annictId})`}
               </Anchor>
               <br />
-              <Anchor
-                href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                  work.title
-                )}&cat=all`}
-                target="_blank"
-                color="pink"
-                size="sm"
-              >
-                Search in MAL
-              </Anchor>
+              <Text size="sm">Search in MAL:</Text>
+              <List size="sm" withPadding>
+                <List.Item>
+                  <Anchor
+                    href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
+                      work.title
+                    )}&cat=all`}
+                    target="_blank"
+                    size="sm"
+                  >
+                    {work.title}
+                  </Anchor>
+                </List.Item>
+                {work.titleEn && (
+                  <List.Item>
+                    <Anchor
+                      href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
+                        work.titleEn
+                      )}&cat=all`}
+                      target="_blank"
+                      size="sm"
+                    >
+                      {work.titleEn}
+                    </Anchor>
+                  </List.Item>
+                )}
+                {work.titleRo && (
+                  <List.Item>
+                    <Anchor
+                      href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
+                        work.titleRo
+                      )}&cat=all`}
+                      target="_blank"
+                      size="sm"
+                    >
+                      {work.titleRo}
+                    </Anchor>
+                  </List.Item>
+                )}
+              </List>
             </td>
             <td>
               <Text>

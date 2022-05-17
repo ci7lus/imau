@@ -1102,6 +1102,8 @@ export type queryLibraryQuery = {
         id: string
         annictId: number
         malAnimeId: string | null
+        titleEn: string | null
+        titleRo: string | null
         title: string
         noEpisodes: boolean
         episodes: {
@@ -1142,6 +1144,8 @@ export const queryLibraryDocument = gql`
           id
           annictId
           malAnimeId
+          titleEn
+          titleRo
           title
           noEpisodes
           episodes {
@@ -1171,10 +1175,15 @@ export const getMeDocument = gql`
 
 export type SdkFunctionWrapper = <T>(
   action: (requestHeaders?: Record<string, string>) => Promise<T>,
-  operationName: string
+  operationName: string,
+  operationType?: string
 ) => Promise<T>
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action()
+const defaultWrapper: SdkFunctionWrapper = (
+  action,
+  _operationName,
+  _operationType
+) => action()
 
 export function getSdk(
   client: GraphQLClient,
@@ -1191,7 +1200,8 @@ export function getSdk(
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        "queryLibrary"
+        "queryLibrary",
+        "query"
       )
     },
     getMe(
@@ -1204,7 +1214,8 @@ export function getSdk(
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        "getMe"
+        "getMe",
+        "query"
       )
     },
   }
