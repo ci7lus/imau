@@ -61,7 +61,7 @@ export const DoSync = ({
                 await sleep(500)
                 setSuccessCount((i) => i + 1)
                 setChecks((checks) => {
-                  const copied = Object.assign([], checks)
+                  const copied = new Set(checks)
                   copied.delete(work.annictId)
                   return copied
                 })
