@@ -87,12 +87,7 @@ export const DiffFetchButton: React.FC<{
               const structedWorks =
                 result.viewer?.works?.nodes
                   ?.map((work) => {
-                    if (
-                      !work ||
-                      !work.annictId ||
-                      !work.title ||
-                      typeof work.noEpisodes === "undefined"
-                    ) {
+                    if (!work || !work.annictId || !work.title) {
                       return
                     }
                     return {
