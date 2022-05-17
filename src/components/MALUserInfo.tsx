@@ -1,12 +1,18 @@
 import { Box, Center, Grid, Avatar, Text } from "@mantine/core"
-import { memo } from "react"
+import { memo, useEffect } from "react"
 import { useQuery } from "react-query"
 import { MALAPI } from "../mal"
 
 export const MALUserInfo = memo(
-  ({ malAccessToken }: { malAccessToken: string }) => {
+  ({
+    malAccessToken,
+    setMalConnected,
+  }: {
+    malAccessToken: string
+    setMalConnected: (s: boolean) => void
+  }) => {
     const mal = new MALAPI(malAccessToken)
-    const { data } = useQuery(
+    const { data, isLoading } = useQuery(
       ["MAL_PROFILE", malAccessToken],
       () => mal.getUsersMe(),
       {
@@ -14,6 +20,12 @@ export const MALUserInfo = memo(
         staleTime: 6000,
       }
     )
+    useEffect(() => {
+      setMalConnected(!!data)
+    }, [data])
+    if (isLoading) {
+      return <Center>Loading...</Center>
+    }
     return (
       <Box>
         <Center>

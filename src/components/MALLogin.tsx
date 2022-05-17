@@ -6,9 +6,11 @@ import { MALUserInfo } from "./MALUserInfo"
 export const MALLogin = ({
   malAccessToken,
   setMalAccessToken,
+  setMalConnected,
 }: {
   malAccessToken: string
   setMalAccessToken: (s: string) => void
+  setMalConnected: (s: boolean) => void
 }) => {
   const authUrl = useMemo(() => {
     if (location.search.includes("mal_access_token=")) {
@@ -50,7 +52,12 @@ export const MALLogin = ({
       <Button component="a" href={authUrl} color="blue">
         {malAccessToken && "(Re)"}Login with MAL
       </Button>
-      {malAccessToken && <MALUserInfo malAccessToken={malAccessToken} />}
+      {malAccessToken && (
+        <MALUserInfo
+          malAccessToken={malAccessToken}
+          setMalConnected={setMalConnected}
+        />
+      )}
     </SimpleGrid>
   )
 }

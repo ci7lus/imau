@@ -1,5 +1,6 @@
-import { SimpleGrid, Space } from "@mantine/core"
+import { Center, SimpleGrid, Space, Text } from "@mantine/core"
 import { useLocalStorageValue } from "@mantine/hooks"
+import { useState } from "react"
 import { AnnictLogin } from "./AnnictLogin"
 import { CheckDiff } from "./CheckDiff"
 import { FirstView } from "./FirstView"
@@ -14,6 +15,8 @@ export const Main = () => {
     key: "MAL_ACCESS_TOKEN",
     defaultValue: "",
   })
+  const [annictConnected, setAnnictConnected] = useState(false)
+  const [malConnected, setMalConnected] = useState(false)
   return (
     <>
       <FirstView />
@@ -22,18 +25,24 @@ export const Main = () => {
         <AnnictLogin
           annictToken={annictToken}
           setAnnictToken={setAnnictToken}
+          setAnnictConnected={setAnnictConnected}
         />
         <MALLogin
           malAccessToken={malAccessToken}
           setMalAccessToken={setMalAccessToken}
+          setMalConnected={setMalConnected}
         ></MALLogin>
       </SimpleGrid>
       <Space h="lg" />
-      {annictToken && (
+      {annictConnected && malConnected ? (
         <CheckDiff
           annictAccessToken={annictToken}
           malAccessToken={malAccessToken}
         />
+      ) : (
+        <Center m="lg">
+          <Text>Connect with both Annit and MAL!</Text>
+        </Center>
       )}
     </>
   )

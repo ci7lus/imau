@@ -5,9 +5,11 @@ import { AnnictUserInfo } from "./AnnictUserInfo"
 export const AnnictLogin = ({
   annictToken,
   setAnnictToken,
+  setAnnictConnected,
 }: {
   annictToken: string
   setAnnictToken: (s: string) => void
+  setAnnictConnected: (s: boolean) => void
 }) => {
   const authUrl = useMemo(() => {
     const ANNICT_CLIENT_ID = import.meta.env.VITE_ANNICT_CLIENT_ID
@@ -40,7 +42,12 @@ export const AnnictLogin = ({
       <Button component="a" href={authUrl} color="pink">
         {annictToken && "(Re)"}Login with Annict
       </Button>
-      {annictToken && <AnnictUserInfo annictToken={annictToken} />}
+      {annictToken && (
+        <AnnictUserInfo
+          annictToken={annictToken}
+          setAnnictConnected={setAnnictConnected}
+        />
+      )}
     </SimpleGrid>
   )
 }

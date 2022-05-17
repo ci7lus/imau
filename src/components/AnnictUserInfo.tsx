@@ -1,18 +1,27 @@
 import { Avatar, Box, Center, Grid, Text } from "@mantine/core"
-import { memo } from "react"
+import { memo, useEffect } from "react"
 import { useQuery } from "react-query"
 import { generateGqlClient } from "../annictApiEntry"
 
 export const AnnictUserInfo = memo(
-  ({ annictToken }: { annictToken: string }) => {
+  ({
+    annictToken,
+    setAnnictConnected,
+  }: {
+    annictToken: string
+    setAnnictConnected: (s: boolean) => void
+  }) => {
     const sdk = generateGqlClient(annictToken)
     const { isLoading, data } = useQuery(
       ["ANNICT_PROFILE", annictToken],
       () => sdk.getMe(),
       { cacheTime: 6000, staleTime: 6000 }
     )
+    useEffect(() => {
+      setAnnictConnected(!!data)
+    }, [data])
     if (isLoading) {
-      return <>Loading...</>
+      return <Center>Loading...</Center>
     }
     return (
       <Box>
