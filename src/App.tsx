@@ -2,8 +2,6 @@ import {
   MantineProvider,
   Header,
   Container,
-  NormalizeCSS,
-  GlobalStyles,
   Text,
   Space,
   Anchor,
@@ -15,10 +13,12 @@ import { queryClient } from "./query"
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={{ colorScheme: "dark" }}>
-        <NormalizeCSS />
-        <GlobalStyles />
-        <Header height={60} padding="md">
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{ colorScheme: "dark" }}
+      >
+        <Header height={60} p="md">
           <Container>
             <Anchor href="/">
               <Text size="lg">imau</Text>
