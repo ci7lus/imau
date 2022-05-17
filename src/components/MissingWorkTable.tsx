@@ -1,4 +1,4 @@
-import { Anchor, Grid, List, Table, Text } from "@mantine/core"
+import { Anchor, List, Table, Text } from "@mantine/core"
 import { WATCH_STATUS_MAP } from "../constants"
 import { AnimeWork } from "../types"
 
