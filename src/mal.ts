@@ -77,6 +77,7 @@ export class MALAPI {
     limit?: number
     offset?: number
     fields?: "list_status"
+    nsfw?: "true"
   }) {
     return this.client.get<{
       data: MALListStatus[]

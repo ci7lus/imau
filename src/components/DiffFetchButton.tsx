@@ -48,6 +48,7 @@ export const DiffFetchButton: React.FC<{
                 limit: 1000,
                 offset,
                 fields: "list_status",
+                nsfw: "true",
               })
               malStatuses.push(...result.data.data)
               const next = result.data.paging.next
