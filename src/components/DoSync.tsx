@@ -17,10 +17,11 @@ export const DoSync = ({
   malAccessToken: string
 }) => {
   const [isStarted, setIsStarted] = useState(false)
+  const [checkCountOnStart, setCheckCountOnStart] = useState(checks.length)
   const [successCount, setSuccessCount] = useState(0)
   const [failedCount, setFailedCount] = useState(0)
-  const success = (successCount / checks.length) * 100
-  const failed = (failedCount / checks.length) * 100
+  const success = (successCount / checkCountOnStart) * 100
+  const failed = (failedCount / checkCountOnStart) * 100
   const [failedWorks, setFailedWorks] = useState<AnimeWork[]>([])
   const [processing, setProcessing] = useState<AnimeWork | null>(null)
   const mal = new MALAPI(malAccessToken)
@@ -33,6 +34,7 @@ export const DoSync = ({
             if (isStarted) {
               return
             }
+            setCheckCountOnStart(checks.length)
             setSuccessCount(0)
             setFailedCount(0)
             setFailedWorks([])
