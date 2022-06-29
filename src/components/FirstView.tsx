@@ -3,7 +3,7 @@ import { Anchor, Space, Text, Title } from "@mantine/core"
 export const FirstView = () => {
   return (
     <>
-      <Title order={2}>imau</Title>
+      <Title order={1}>imau</Title>
       <Space h="xs" />
       <Text size="lg">
         Sync your viewing status from{" "}

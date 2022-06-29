@@ -1,11 +1,4 @@
-import {
-  MantineProvider,
-  Header,
-  Container,
-  Text,
-  Space,
-  Anchor,
-} from "@mantine/core"
+import { MantineProvider, Container, Text, Space, Anchor } from "@mantine/core"
 import { QueryClientProvider } from "react-query"
 import { Main } from "./components/Main"
 import { queryClient } from "./query"
@@ -18,15 +11,8 @@ export const App = () => {
         withNormalizeCSS
         theme={{ colorScheme: "dark" }}
       >
-        <Header height={60} p="md">
-          <Container>
-            <Anchor href="/">
-              <Text size="lg">imau</Text>
-            </Anchor>
-          </Container>
-        </Header>
         <Container>
-          <Space h="md" />
+          <Space h="xl" />
           <Main />
         </Container>
         <Space h="md" />
