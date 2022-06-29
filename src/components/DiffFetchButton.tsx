@@ -40,7 +40,7 @@ export const DiffFetchButton: React.FC<{
         try {
           const malStatuses: MALListStatus[] = []
 
-          const armReq = axios.get<{ mal_id: number; annict_id: number }[]>(
+          const armReq = axios.get<{ mal_id?: number; annict_id?: number }[]>(
             "https://cdn.jsdelivr.net/gh/kawaiioverflow/arm@master/arm.json"
           )
 
@@ -167,23 +167,24 @@ export const DiffFetchButton: React.FC<{
               const armRelation = arm.find(
                 (entry) => entry.mal_id === malWork.node.id
               )
-              if (!armRelation) {
+              if (!armRelation || !armRelation.annict_id) {
                 return
               }
-              return { armRelation, malWork }
+              return {
+                ...malWork,
+                annict_id: armRelation.annict_id,
+              }
             })
             .filter((x): x is Exclude<typeof x, undefined> => !!x)
 
           const missingWorksAnnictQuery = await annict.queryWorks({
-            workIds: missingInOriginWorks
-              .filter(({ armRelation }) => armRelation.annict_id)
-              .map(({ armRelation }) => armRelation.annict_id),
+            workIds: missingInOriginWorks.map(({ annict_id }) => annict_id),
           })
 
           const additionalDiffs: StatusDiff[] = missingInOriginWorks
-            .map(({ armRelation, malWork }) => {
+            .map((malWork) => {
               const work = missingWorksAnnictQuery.searchWorks?.nodes?.find(
-                (work) => work?.annictId === armRelation.annict_id
+                (work) => work?.annictId === malWork.annict_id
               )
               if (!work) {
                 return
