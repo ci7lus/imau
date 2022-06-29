@@ -14,6 +14,7 @@ export const DiffFetchButton: React.FC<{
   setDiffs: React.Dispatch<React.SetStateAction<StatusDiff[]>>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
   setMissingWorks: React.Dispatch<React.SetStateAction<AnimeWork[]>>
+  ignores: number[]
 }> = ({
   annictAccessToken,
   malAccessToken,
@@ -21,6 +22,7 @@ export const DiffFetchButton: React.FC<{
   setDiffs,
   setChecks,
   setMissingWorks,
+  ignores,
 }) => {
   const annict = generateGqlClient(annictAccessToken)
   const mal = useMemo(() => new MALAPI(malAccessToken), [malAccessToken])
@@ -215,7 +217,13 @@ export const DiffFetchButton: React.FC<{
 
           diffs.push(...additionalDiffs)
           setDiffs(diffs)
-          setChecks(new Set(diffs.map(({ work }) => work.annictId)))
+          setChecks(
+            new Set(
+              diffs
+                .map(({ work }) => work.annictId)
+                .filter((x) => !ignores.includes(x))
+            )
+          )
           setMissingWorks(missingWorks)
         } finally {
           setIsFetching(false)

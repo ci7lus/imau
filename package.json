@@ -50,6 +50,7 @@
     "mal-ts": "^1.0.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-query": "^3.39.0"
+    "react-query": "^3.39.0",
+    "tabler-icons-react": "^1.51.0"
   }
 }

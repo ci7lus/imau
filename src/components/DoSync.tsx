@@ -10,11 +10,13 @@ export const DoSync = ({
   setChecks,
   diffs,
   malAccessToken,
+  disabled,
 }: {
   checks: number[]
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
   diffs: StatusDiff[]
   malAccessToken: string
+  disabled: boolean
 }) => {
   const [isStarted, setIsStarted] = useState(false)
   const [checkCountOnStart, setCheckCountOnStart] = useState(checks.length)
@@ -29,6 +31,7 @@ export const DoSync = ({
     <>
       <Center>
         <Button
+          disabled={disabled}
           color={checks.length === 0 || isStarted ? "gray" : "primary"}
           onClick={async () => {
             if (isStarted) {

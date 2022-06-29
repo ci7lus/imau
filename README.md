@@ -2,7 +2,7 @@
 
 Sync your viewing status from Annict to MAL to play AMQ (AnimeMusicQuiz).<br />
 
-[![Image from Gyazo](https://i.gyazo.com/0c9572e7e1f716964ff582b64f6fdabe.png)](https://gyazo.com/0c9572e7e1f716964ff582b64f6fdabe)
+[![Image from Gyazo](https://i.gyazo.com/677b6dea14808fc7792c414be3e3df77.png)](https://gyazo.com/677b6dea14808fc7792c414be3e3df77)
 
 ## dev
 

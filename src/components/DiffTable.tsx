@@ -1,4 +1,6 @@
-import { Anchor, Checkbox, Table, Text } from "@mantine/core"
+import { ActionIcon, Anchor, Checkbox, Table, Text } from "@mantine/core"
+import { useMemo } from "react"
+import { Forbid } from "tabler-icons-react"
 import { WATCH_STATUS_MAP } from "../constants"
 import { MAL_TO_ANNICT_STATUS_MAP } from "../mal"
 import { StatusDiff } from "../types"
@@ -7,11 +9,19 @@ export const DiffTable = ({
   diffs,
   checks,
   setChecks,
+  ignores,
+  setIgnores,
 }: {
   diffs: StatusDiff[]
   checks: Set<number>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
+  ignores: number[]
+  setIgnores: React.Dispatch<React.SetStateAction<number[]>>
 }) => {
+  const sortedMemo = useMemo(
+    () => diffs.sort((_, b) => (ignores.includes(b.work.annictId) ? -1 : 0)),
+    [diffs]
+  )
   return (
     <Table striped highlightOnHover>
       <thead>
@@ -20,19 +30,24 @@ export const DiffTable = ({
           <th>Title</th>
           <th>Annict</th>
           <th>MAL</th>
+          <th>Ignore</th>
         </tr>
       </thead>
       <tbody>
-        {diffs.map(({ work, mal }) => (
-          <tr key={work.annictId}>
+        {sortedMemo.map(({ work, mal }) => (
+          <tr
+            key={work.annictId}
+            style={{
+              opacity: ignores.includes(work.annictId) ? 0.5 : undefined,
+            }}
+          >
             <td>
               <Checkbox
                 checked={checks.has(work.annictId)}
                 onClick={() => {
-                  const isChecked = checks.has(work.annictId)
                   setChecks((checks) => {
                     const copiedChecks = new Set(checks)
-                    if (isChecked) {
+                    if (checks.has(work.annictId)) {
                       copiedChecks.delete(work.annictId)
                     } else {
                       copiedChecks.add(work.annictId)
@@ -82,6 +97,32 @@ export const DiffTable = ({
                   </Text>
                 )}
               </Text>
+            </td>
+            <td>
+              <ActionIcon
+                title="Ignore this entry"
+                onClick={() => {
+                  setIgnores((ignores) => {
+                    const includes = ignores.includes(work.annictId)
+                    setChecks((checks) => {
+                      const copiedChecks = new Set(checks)
+                      if (checks.has(work.annictId) && !includes) {
+                        copiedChecks.delete(work.annictId)
+                      } else if (includes) {
+                        copiedChecks.add(work.annictId)
+                      }
+                      return copiedChecks
+                    })
+                    return includes
+                      ? ignores.filter((ignore) => ignore !== work.annictId)
+                      : [...ignores, work.annictId]
+                  })
+                }}
+                size="lg"
+                color={ignores.includes(work.annictId) ? "red" : "gray"}
+              >
+                <Forbid />
+              </ActionIcon>
             </td>
           </tr>
         ))}
