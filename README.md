@@ -7,7 +7,7 @@ Sync your viewing status from Annict to MAL to play AMQ (AnimeMusicQuiz).<br />
 ## dev
 
 ```bash
-yarn global add netlify-cli
+npm install -g netlify-cli
 yarn
 netlify dev
 ```
