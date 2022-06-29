@@ -231,7 +231,7 @@ export const DiffFetchButton: React.FC<{
         }
       }}
     >
-      {!isFetching ? "Prepare to sync" : "Abort"}
+      {!isFetching ? "Prepare to sync" : "Stop"}
     </Button>
   )
 }
