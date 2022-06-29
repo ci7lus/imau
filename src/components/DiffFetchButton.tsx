@@ -1,4 +1,5 @@
 import { Button } from "@mantine/core"
+import axios from "axios"
 import { useMemo, useRef, useState } from "react"
 import { generateGqlClient } from "../annictApiEntry"
 import { queryLibraryQuery, StatusState } from "../annictGql"
@@ -38,6 +39,10 @@ export const DiffFetchButton: React.FC<{
 
         try {
           const malStatuses: MALListStatus[] = []
+
+          const armReq = axios.get<{ mal_id: number; annict_id: number }[]>(
+            "https://cdn.jsdelivr.net/gh/kawaiioverflow/arm@master/arm.json"
+          )
 
           {
             let offset = 0
@@ -150,6 +155,64 @@ export const DiffFetchButton: React.FC<{
               return false
             })
             .filter((diff): diff is StatusDiff => !!diff)
+
+          const arm = (await armReq).data
+
+          const missingInOriginWorks = malStatuses
+            .filter(
+              (malWork) =>
+                !works.find((work) => work.malId === malWork.node.id.toString())
+            )
+            .map((malWork) => {
+              const armRelation = arm.find(
+                (entry) => entry.mal_id === malWork.node.id
+              )
+              if (!armRelation) {
+                return
+              }
+              return { armRelation, malWork }
+            })
+            .filter((x): x is Exclude<typeof x, undefined> => !!x)
+
+          const missingWorksAnnictQuery = await annict.queryWorks({
+            workIds: missingInOriginWorks
+              .filter(({ armRelation }) => armRelation.annict_id)
+              .map(({ armRelation }) => armRelation.annict_id),
+          })
+
+          const additionalDiffs: StatusDiff[] = missingInOriginWorks
+            .map(({ armRelation, malWork }) => {
+              const work = missingWorksAnnictQuery.searchWorks?.nodes?.find(
+                (work) => work?.annictId === armRelation.annict_id
+              )
+              if (!work) {
+                return
+              }
+              const diff: StatusDiff = {
+                work: {
+                  annictId: work.annictId,
+                  malId: work.malAnimeId,
+                  title: work.title,
+                  titleEn: work.titleEn || null,
+                  titleRo: work.titleRo || null,
+                  noEpisodes: work.noEpisodes,
+                  watchedEpisodeCount:
+                    work?.episodes?.nodes?.filter(
+                      (episode) => episode?.viewerDidTrack
+                    ).length ?? 0,
+                  status: work.viewerStatusState || StatusState.NO_STATE,
+                },
+                mal: {
+                  status: malWork.list_status.status,
+                  watchedEpisodeCount: malWork.list_status.num_episodes_watched,
+                  title: malWork.node.title,
+                },
+              }
+              return diff
+            })
+            .filter((x): x is Exclude<typeof x, undefined> => !!x)
+
+          diffs.push(...additionalDiffs)
           setDiffs(diffs)
           setChecks(new Set(diffs.map(({ work }) => work.annictId)))
           setMissingWorks(missingWorks)

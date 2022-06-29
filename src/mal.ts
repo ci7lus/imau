@@ -7,11 +7,12 @@ export type MALAnimeStatus =
   | "on_hold"
   | "dropped"
   | "plan_to_watch"
+  | "no_state" // Invalid on MAL
 
 export const ANNICT_TO_MAL_STATUS_MAP: {
   [key in keyof typeof StatusState]: MALAnimeStatus
 } = {
-  NO_STATE: "on_hold", // Invalid
+  NO_STATE: "no_state",
   ON_HOLD: "on_hold",
   WATCHING: "watching",
   STOP_WATCHING: "dropped",
@@ -27,6 +28,7 @@ export const MAL_TO_ANNICT_STATUS_MAP: {
   on_hold: StatusState.ON_HOLD,
   dropped: StatusState.STOP_WATCHING,
   plan_to_watch: StatusState.WANNA_WATCH,
+  no_state: StatusState.NO_STATE,
 }
 
 export type MALAnimeNode = {
@@ -69,6 +71,10 @@ export class MALAPI {
         .map(([k, v]) => [k, v.toString()])
     )
     return this.client.patch(`/anime/${options.id}/my_list_status`, payload)
+  }
+
+  deleteAnimeStatus(options: { id: string }) {
+    return this.client.delete(`/anime/${options.id}/my_list_status`)
   }
 
   getAnimeStatuses(params: {

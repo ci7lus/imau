@@ -51,15 +51,19 @@ export const DoSync = ({
               }
               setProcessing(work)
               try {
-                await mal.updateAnimeStatus({
-                  id: work.malId,
-                  status: ANNICT_TO_MAL_STATUS_MAP[work.status],
-                  num_watched_episodes: work.noEpisodes
-                    ? work.status === StatusState.WATCHED
-                      ? 1
-                      : undefined
-                    : work.watchedEpisodeCount,
-                })
+                if (work.status === StatusState.NO_STATE) {
+                  await mal.deleteAnimeStatus({ id: work.malId })
+                } else {
+                  await mal.updateAnimeStatus({
+                    id: work.malId,
+                    status: ANNICT_TO_MAL_STATUS_MAP[work.status],
+                    num_watched_episodes: work.noEpisodes
+                      ? work.status === StatusState.WATCHED
+                        ? 1
+                        : undefined
+                      : work.watchedEpisodeCount,
+                  })
+                }
                 await sleep(500)
                 setSuccessCount((i) => i + 1)
                 setChecks((checks) => {

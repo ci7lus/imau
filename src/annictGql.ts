@@ -1124,6 +1124,35 @@ export type queryLibraryQuery = {
   } | null
 }
 
+export type queryWorksQueryVariables = Exact<{
+  workIds: InputMaybe<Array<Scalars["Int"]> | Scalars["Int"]>
+}>
+
+export type queryWorksQuery = {
+  __typename?: "Query"
+  searchWorks: {
+    __typename?: "WorkConnection"
+    nodes: Array<{
+      __typename?: "Work"
+      id: string
+      annictId: number
+      malAnimeId: string | null
+      titleEn: string | null
+      titleRo: string | null
+      title: string
+      noEpisodes: boolean
+      viewerStatusState: StatusState | null
+      episodes: {
+        __typename?: "EpisodeConnection"
+        nodes: Array<{
+          __typename?: "Episode"
+          viewerDidTrack: boolean
+        } | null> | null
+      } | null
+    } | null> | null
+  } | null
+}
+
 export type getMeQueryVariables = Exact<{ [key: string]: never }>
 
 export type getMeQuery = {
@@ -1159,6 +1188,27 @@ export const queryLibraryDocument = gql`
           hasPreviousPage
           endCursor
         }
+      }
+    }
+  }
+`
+export const queryWorksDocument = gql`
+  query queryWorks($workIds: [Int!]) {
+    searchWorks(annictIds: $workIds) {
+      nodes {
+        id
+        annictId
+        malAnimeId
+        titleEn
+        titleRo
+        title
+        noEpisodes
+        episodes {
+          nodes {
+            viewerDidTrack
+          }
+        }
+        viewerStatusState
       }
     }
   }
@@ -1201,6 +1251,20 @@ export function getSdk(
             ...wrappedRequestHeaders,
           }),
         "queryLibrary",
+        "query"
+      )
+    },
+    queryWorks(
+      variables?: queryWorksQueryVariables,
+      requestHeaders?: Dom.RequestInit["headers"]
+    ): Promise<queryWorksQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<queryWorksQuery>(queryWorksDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        "queryWorks",
         "query"
       )
     },

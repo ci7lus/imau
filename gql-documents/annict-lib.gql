@@ -23,3 +23,23 @@ query queryLibrary($state: StatusState!, $after: String) {
     }
   }
 }
+
+query queryWorks($workIds: [Int!]) {
+  searchWorks(annictIds: $workIds) {
+    nodes {
+      id
+      annictId
+      malAnimeId
+      titleEn
+      titleRo
+      title
+      noEpisodes
+      episodes {
+        nodes {
+          viewerDidTrack
+        }
+      }
+      viewerStatusState
+    }
+  }
+}
