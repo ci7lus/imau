@@ -33,11 +33,18 @@ const handler: Handler = async (event) => {
       },
     }
   )
+  if (typeof result.data.access_token !== "string") {
+    return {
+      statusCode: 400,
+      body: "try again",
+    }
+  }
   return {
-    statusCode: 301,
+    statusCode: 200,
     headers: {
-      Location: `/?annict_access_token=${result.data.access_token}`,
+      "Content-Type": "text/html",
     },
+    body: `<script>localStorage.setItem("ANNICT_ACCESS_TOKEN", ${JSON.stringify(result.data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`
   }
 }
 

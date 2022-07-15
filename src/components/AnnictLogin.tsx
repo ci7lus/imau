@@ -27,15 +27,6 @@ export const AnnictLogin = ({
     url.searchParams.set("redirect_uri", ANNICT_REDIRECT_URL)
     return url.href
   }, [])
-  useEffect(() => {
-    const url = new URL(location.href)
-    const code = url.searchParams.get("annict_access_token")
-    if (!code) {
-      return
-    }
-    setAnnictToken(code)
-    history.replaceState({}, document.title, "/")
-  }, [])
 
   return (
     <SimpleGrid>
