@@ -1,11 +1,10 @@
 import { Button, SimpleGrid } from "@mantine/core"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { generateRandomString } from "../utils"
 import { MALUserInfo } from "./MALUserInfo"
 
 export const MALLogin = ({
   malAccessToken,
-  setMalAccessToken,
   setMalConnected,
 }: {
   malAccessToken: string
@@ -13,9 +12,6 @@ export const MALLogin = ({
   setMalConnected: (s: boolean) => void
 }) => {
   const authUrl = useMemo(() => {
-    if (location.search.includes("mal_access_token=")) {
-      return
-    }
     const MAL_CLIENT_ID = import.meta.env.VITE_MAL_CLIENT_ID
     const MAL_REDIRECT_URL = import.meta.env.VITE_MAL_REDIRECT_URL
     if (
@@ -36,15 +32,6 @@ export const MALLogin = ({
     url.searchParams.set("code_challenge_method", "plain")
     url.searchParams.set("redirect_uri", MAL_REDIRECT_URL)
     return url.href
-  }, [])
-  useEffect(() => {
-    const url = new URL(location.href)
-    const code = url.searchParams.get("mal_access_token")
-    if (!code) {
-      return
-    }
-    setMalAccessToken(code)
-    history.replaceState({}, document.title, "/")
   }, [])
 
   return (

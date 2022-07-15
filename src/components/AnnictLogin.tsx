@@ -1,10 +1,9 @@
 import { Button, SimpleGrid } from "@mantine/core"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { AnnictUserInfo } from "./AnnictUserInfo"
 
 export const AnnictLogin = ({
   annictToken,
-  setAnnictToken,
   setAnnictConnected,
 }: {
   annictToken: string
@@ -26,15 +25,6 @@ export const AnnictLogin = ({
     url.searchParams.set("client_id", ANNICT_CLIENT_ID)
     url.searchParams.set("redirect_uri", ANNICT_REDIRECT_URL)
     return url.href
-  }, [])
-  useEffect(() => {
-    const url = new URL(location.href)
-    const code = url.searchParams.get("annict_access_token")
-    if (!code) {
-      return
-    }
-    setAnnictToken(code)
-    history.replaceState({}, document.title, "/")
   }, [])
 
   return (
