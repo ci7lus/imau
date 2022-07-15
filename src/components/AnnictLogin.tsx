@@ -1,10 +1,9 @@
 import { Button, SimpleGrid } from "@mantine/core"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { AnnictUserInfo } from "./AnnictUserInfo"
 
 export const AnnictLogin = ({
   annictToken,
-  setAnnictToken,
   setAnnictConnected,
 }: {
   annictToken: string

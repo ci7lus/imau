@@ -1,11 +1,10 @@
 import { Button, SimpleGrid } from "@mantine/core"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { generateRandomString } from "../utils"
 import { MALUserInfo } from "./MALUserInfo"
 
 export const MALLogin = ({
   malAccessToken,
-  setMalAccessToken,
   setMalConnected,
 }: {
   malAccessToken: string
