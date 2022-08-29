@@ -15,7 +15,9 @@
     "format:prettier": "prettier --write './src/**/*.{js,ts,tsx}'",
     "lint:eslint": "eslint --max-warnings 0 --cache './src/**/*.{js,ts,tsx}'",
     "format:eslint": "eslint './src/**/*.{js,ts,tsx}' --cache --fix",
-    "codegen": "graphql-codegen --config ./annict-codegen.yml && yarn format:prettier"
+    "codegen": "concurrently -n codegen: 'yarn:codegen:*'",
+    "codegen:annict": "graphql-codegen --config ./annict-codegen.yml && yarn format:prettier",
+    "codegen:anilist": "graphql-codegen --config ./anilist-codegen.yml && yarn format:prettier"
   },
   "devDependencies": {
     "@graphql-codegen/add": "^3.1.0",
@@ -27,6 +29,7 @@
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "@vitejs/plugin-react": "^1.3.2",
+    "concurrently": "^7.3.0",
     "eslint": "^8.15.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",

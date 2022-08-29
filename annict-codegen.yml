@@ -1,7 +1,7 @@
 schema: ./annict-schema.gql
-documents: ./gql-documents/*.gql
+documents: ./gql-documents/annict/*.gql
 config:
-  namingConvention: ./gqlNaming.js
+  namingConvention: ./annictGqlNaming.js
 generates:
   ./src/annictGql.ts:
     plugins:
