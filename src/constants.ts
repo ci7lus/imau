@@ -10,3 +10,7 @@ export const WATCH_STATUS_MAP: { [key in StatusStateKey]: string } = {
   WANNA_WATCH: "Wanna Watch",
   WATCHED: "Watched",
 }
+
+export const TARGET_SERVICE_MAL = "mal"
+export const TARGET_SERVICE_ANILIST = "anilist"
+export type TargetService = typeof TARGET_SERVICE_MAL | typeof TARGET_SERVICE_ANILIST
