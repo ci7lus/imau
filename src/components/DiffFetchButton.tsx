@@ -1,12 +1,21 @@
 import { Button } from "@mantine/core"
 import axios from "axios"
 import { useMemo, useRef, useState } from "react"
+import {
+  ANILIST_TO_ANNICT_STATUS_MAP,
+  ANNICT_TO_ANILIST_STATUS_MAP,
+} from "../aniList"
 import { generateGqlClient as generateAniListGqlClient } from "../aniListApiEntry"
-import { MediaListSort } from "../aniListGql"
+import { MediaListSort, MediaListStatus } from "../aniListGql"
 import { generateGqlClient } from "../annictApiEntry"
 import { queryLibraryQuery, StatusState } from "../annictGql"
 import { TARGET_SERVICE_MAL, TargetService } from "../constants"
-import { ANNICT_TO_MAL_STATUS_MAP, MALAPI, MALListStatus } from "../mal"
+import {
+  ANNICT_TO_MAL_STATUS_MAP,
+  MAL_TO_ANNICT_STATUS_MAP,
+  MALAnimeStatus,
+  MALAPI,
+} from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
@@ -49,10 +58,12 @@ export const DiffFetchButton: React.FC<{
         setIsFetching(true)
 
         try {
-          // TODO: 共通インターフェースを作ったほうがいいかも
-          const serviceStatuses: {}[] = []
-          const malStatuses: MALListStatus[] = []
-          const aniListStatuses = []
+          const serviceStatuses: {
+            id: string
+            title: string
+            status: keyof typeof StatusState
+            watchedEpisodeCount: number
+          }[] = []
 
           const armReq = axios.get<
             { mal_id?: number; annict_id?: number; anilist_id?: number }[]
@@ -69,7 +80,14 @@ export const DiffFetchButton: React.FC<{
                 fields: "list_status",
                 nsfw: "true",
               })
-              malStatuses.push(...result.data.data)
+              serviceStatuses.push(
+                ...result.data.data.map((d) => ({
+                  id: d.node.id.toString(),
+                  title: d.node.title,
+                  status: MAL_TO_ANNICT_STATUS_MAP[d.list_status.status],
+                  watchedEpisodeCount: d.list_status.num_episodes_watched,
+                }))
+              )
               const next = result.data.paging.next
               if (next) {
                 const nextUrl = new URL(next)
@@ -92,6 +110,63 @@ export const DiffFetchButton: React.FC<{
 
             if (abortRef.current) {
               return
+            }
+          } else {
+            const user = await aniList.getMe()
+            if (!user.Viewer?.id) {
+              return
+            }
+
+            let chunk = 0
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+              const result = await aniList.queryLibrary({
+                userId: user.Viewer.id,
+                sort: [MediaListSort.StartedOn],
+                perChunk: 500,
+                chunk,
+              })
+
+              const media = result.MediaListCollection?.lists?.flatMap(
+                (list) => list?.entries ?? []
+              )
+              if (media) {
+                serviceStatuses.push(
+                  ...media
+                    .map((m) => {
+                      if (
+                        !m?.id ||
+                        !m.media?.title ||
+                        !m.status ||
+                        m.progress === null
+                      ) {
+                        return
+                      }
+
+                      return {
+                        id: m.id.toString(),
+                        title:
+                          m.media.title.english ??
+                          m.media.title.romaji ??
+                          m.media.title.native ??
+                          "",
+                        status: ANILIST_TO_ANNICT_STATUS_MAP[m.status],
+                        watchedEpisodeCount: m.progress,
+                      }
+                    })
+                    .filter((x): x is Exclude<typeof x, undefined> => !!x)
+                )
+              }
+
+              if (abortRef.current) {
+                return
+              }
+              if (!result.MediaListCollection?.hasNextChunk) {
+                break
+              }
+
+              chunk++
+              await sleep(500)
             }
           }
 
@@ -135,6 +210,44 @@ export const DiffFetchButton: React.FC<{
             }
           }
 
+          const arm = (await armReq).data
+
+          // 現在有効なターゲットの作品IDなどを取得する関数群
+          const getTargetWorkId = (work: AnimeWork): string | null => {
+            switch (targetService) {
+              case "mal":
+                return work.malId
+              default:
+                // Annict のレスポンスには AniList ID が含まれないので arm を利用する
+                return (
+                  arm
+                    .find((entry) => entry.annict_id === work.annictId)
+                    ?.anilist_id?.toString() ?? null
+                )
+            }
+          }
+          const getTargetArmId = (entry: {
+            mal_id?: number
+            anilist_id?: number
+          }): string | null => {
+            switch (targetService) {
+              case "mal":
+                return entry.mal_id?.toString() ?? null
+              default:
+                return entry.anilist_id?.toString() ?? null
+            }
+          }
+          const getTargetStatus = (
+            status: keyof typeof StatusState
+          ): MALAnimeStatus | keyof typeof MediaListStatus | null => {
+            switch (targetService) {
+              case "mal":
+                return ANNICT_TO_MAL_STATUS_MAP[status]
+              default:
+                return ANNICT_TO_ANILIST_STATUS_MAP[status] ?? null
+            }
+          }
+
           const missingWorks: AnimeWork[] = []
           const diffs = works
             .map((work) => {
@@ -142,25 +255,22 @@ export const DiffFetchButton: React.FC<{
                 missingWorks.push(work)
                 return false
               }
-              const malStatus = malStatuses.find(
-                (status) => status.node.id.toString() === work.malId
+              const status = serviceStatuses.find(
+                (status) => status?.id === getTargetWorkId(work)
               )
               if (
-                !malStatus ||
-                malStatus.list_status.status !==
-                  ANNICT_TO_MAL_STATUS_MAP[work.status] ||
+                !status ||
+                status.status !== work.status ||
                 (!work.noEpisodes &&
-                  malStatus.list_status.num_episodes_watched !==
-                    work.watchedEpisodeCount)
+                  status.watchedEpisodeCount !== work.watchedEpisodeCount)
               ) {
                 const diff: StatusDiff = {
                   work,
-                  mal: malStatus
+                  target: status
                     ? {
-                        status: malStatus.list_status.status,
-                        watchedEpisodeCount:
-                          malStatus.list_status.num_episodes_watched,
-                        title: malStatus.node.title,
+                        status: getTargetStatus(status.status),
+                        watchedEpisodeCount: status.watchedEpisodeCount,
+                        title: status.title,
                       }
                     : undefined,
                 }
@@ -170,22 +280,20 @@ export const DiffFetchButton: React.FC<{
             })
             .filter((diff): diff is StatusDiff => !!diff)
 
-          const arm = (await armReq).data
-
-          const missingInOriginWorks = malStatuses
+          const missingInOriginWorks = serviceStatuses
             .filter(
-              (malWork) =>
-                !works.find((work) => work.malId === malWork.node.id.toString())
+              (serviceWork) =>
+                !works.find((work) => serviceWork.id === getTargetWorkId(work))
             )
-            .map((malWork) => {
+            .map((serviceWork) => {
               const armRelation = arm.find(
-                (entry) => entry.mal_id === malWork.node.id
+                (entry) => serviceWork.id === getTargetArmId(entry)
               )
               if (!armRelation || !armRelation.annict_id) {
                 return
               }
               return {
-                ...malWork,
+                ...serviceWork,
                 annict_id: armRelation.annict_id,
               }
             })
@@ -196,9 +304,9 @@ export const DiffFetchButton: React.FC<{
           })
 
           const additionalDiffs: StatusDiff[] = missingInOriginWorks
-            .map((malWork) => {
+            .map((serviceWork) => {
               const work = missingWorksAnnictQuery.searchWorks?.nodes?.find(
-                (work) => work?.annictId === malWork.annict_id
+                (work) => work?.annictId === serviceWork.annict_id
               )
               if (!work) {
                 return
@@ -217,10 +325,10 @@ export const DiffFetchButton: React.FC<{
                     ).length ?? 0,
                   status: work.viewerStatusState || StatusState.NO_STATE,
                 },
-                mal: {
-                  status: malWork.list_status.status,
-                  watchedEpisodeCount: malWork.list_status.num_episodes_watched,
-                  title: malWork.node.title,
+                target: {
+                  status: getTargetStatus(serviceWork.status),
+                  watchedEpisodeCount: serviceWork.watchedEpisodeCount,
+                  title: serviceWork.title,
                 },
               }
               return diff

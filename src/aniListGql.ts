@@ -4545,7 +4545,8 @@ export type YearStats = {
 
 export type QueryLibraryQueryVariables = Exact<{
   userId: Scalars["Int"]
-  status: MediaListStatus
+  sort: Array<MediaListSort> | MediaListSort
+  perChunk: Scalars["Int"]
   chunk: Scalars["Int"]
 }>
 
@@ -4560,6 +4561,7 @@ export type QueryLibraryQuery = {
         __typename?: "MediaList"
         id: number
         progress: number | null
+        status: MediaListStatus | null
         media: {
           __typename?: "Media"
           id: number
@@ -4642,18 +4644,24 @@ export type DeleteMediaStatusMutation = {
 }
 
 export const QueryLibraryDocument = gql`
-  query queryLibrary($userId: Int!, $status: MediaListStatus!, $chunk: Int!) {
+  query queryLibrary(
+    $userId: Int!
+    $sort: [MediaListSort!]!
+    $perChunk: Int!
+    $chunk: Int!
+  ) {
     MediaListCollection(
       userId: $userId
-      status: $status
-      type: ANIME
+      sort: $sort
+      perChunk: $perChunk
       chunk: $chunk
-      perChunk: 500
+      type: ANIME
     ) {
       lists {
         entries {
           id
           progress
+          status
           media {
             id
             idMal
