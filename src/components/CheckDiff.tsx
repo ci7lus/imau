@@ -10,6 +10,7 @@ import { useLocalStorage } from "@mantine/hooks"
 import { useMemo, useState } from "react"
 import { Eraser } from "tabler-icons-react"
 import { StatusState } from "../annictGql"
+import { TargetService } from "../constants"
 import { AnimeWork, StatusDiff } from "../types"
 import { DiffFetchButton } from "./DiffFetchButton"
 import { DiffTable } from "./DiffTable"
@@ -18,10 +19,12 @@ import { MissingWorkTable } from "./MissingWorkTable"
 
 export const CheckDiff = ({
   annictAccessToken,
-  malAccessToken,
+  targetService,
+  targetAccessToken,
 }: {
   annictAccessToken: string
-  malAccessToken: string
+  targetService: TargetService
+  targetAccessToken: string
 }) => {
   const [checks, setChecks] = useState(new Set<number>())
   const [diffs, setDiffs] = useState<StatusDiff[]>([])
@@ -45,7 +48,8 @@ export const CheckDiff = ({
       <Grid justify="center" align="center">
         <DiffFetchButton
           annictAccessToken={annictAccessToken}
-          malAccessToken={malAccessToken}
+          targetService={targetService}
+          targetAccessToken={targetAccessToken}
           statuses={[
             StatusState.WATCHING,
             StatusState.WATCHED,
@@ -110,14 +114,15 @@ export const CheckDiff = ({
           setIgnores={setIgnores}
         />
       </ScrollArea>
-      {malAccessToken && (
+      {targetAccessToken && (
         <>
           <Space h="xl" />
           <DoSync
             checks={Array.from(checks)}
             setChecks={setChecks}
             diffs={diffs}
-            malAccessToken={malAccessToken}
+            targetService={targetService}
+            targetAccessToken={targetAccessToken}
             disabled={0 === checks.size}
           />
         </>

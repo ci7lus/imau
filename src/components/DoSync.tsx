@@ -1,21 +1,29 @@
 import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
 import { useState } from "react"
 import { StatusState } from "../annictGql"
+import {
+  TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
+  TargetService,
+} from "../constants"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
+import { generateGqlClient } from "../aniListApiEntry"
 
 export const DoSync = ({
   checks,
   setChecks,
   diffs,
-  malAccessToken,
+  targetService,
+  targetAccessToken,
   disabled,
 }: {
   checks: number[]
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
   diffs: StatusDiff[]
-  malAccessToken: string
+  targetService: TargetService
+  targetAccessToken: string
   disabled: boolean
 }) => {
   const [isStarted, setIsStarted] = useState(false)
@@ -26,7 +34,8 @@ export const DoSync = ({
   const failed = (failedCount / checkCountOnStart) * 100
   const [failedWorks, setFailedWorks] = useState<AnimeWork[]>([])
   const [processing, setProcessing] = useState<AnimeWork | null>(null)
-  const mal = new MALAPI(malAccessToken)
+  const mal = new MALAPI(targetAccessToken)
+  const aniList = generateGqlClient(targetAccessToken)
   return (
     <>
       <Center>

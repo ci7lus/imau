@@ -1,7 +1,7 @@
 import { Box, Center, Grid, Avatar, Text } from "@mantine/core"
 import { memo, useEffect } from "react"
 import { useQuery } from "react-query"
-import { generateGqlClient } from '../aniListApiEntry'
+import { generateGqlClient } from "../aniListApiEntry"
 
 export const AniListUserInfo = memo(
   ({

@@ -1,15 +1,19 @@
 import { Button } from "@mantine/core"
 import axios from "axios"
 import { useMemo, useRef, useState } from "react"
+import { generateGqlClient as generateAniListGqlClient } from "../aniListApiEntry"
+import { MediaListSort } from "../aniListGql"
 import { generateGqlClient } from "../annictApiEntry"
 import { queryLibraryQuery, StatusState } from "../annictGql"
+import { TARGET_SERVICE_MAL, TargetService } from "../constants"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI, MALListStatus } from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
 export const DiffFetchButton: React.FC<{
   annictAccessToken: string
-  malAccessToken: string
+  targetService: TargetService
+  targetAccessToken: string
   statuses: StatusState[]
   setDiffs: React.Dispatch<React.SetStateAction<StatusDiff[]>>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
@@ -17,7 +21,8 @@ export const DiffFetchButton: React.FC<{
   ignores: number[]
 }> = ({
   annictAccessToken,
-  malAccessToken,
+  targetService,
+  targetAccessToken,
   statuses,
   setDiffs,
   setChecks,
@@ -25,7 +30,11 @@ export const DiffFetchButton: React.FC<{
   ignores,
 }) => {
   const annict = generateGqlClient(annictAccessToken)
-  const mal = useMemo(() => new MALAPI(malAccessToken), [malAccessToken])
+  const mal = useMemo(() => new MALAPI(targetAccessToken), [targetAccessToken])
+  const aniList = useMemo(
+    () => generateAniListGqlClient(targetAccessToken),
+    [targetAccessToken]
+  )
   const [isFetching, setIsFetching] = useState(false)
   const abortRef = useRef(false)
 
@@ -40,13 +49,16 @@ export const DiffFetchButton: React.FC<{
         setIsFetching(true)
 
         try {
+          // TODO: 共通インターフェースを作ったほうがいいかも
+          const serviceStatuses: {}[] = []
           const malStatuses: MALListStatus[] = []
+          const aniListStatuses = []
 
-          const armReq = axios.get<{ mal_id?: number; annict_id?: number }[]>(
-            "https://cdn.jsdelivr.net/gh/kawaiioverflow/arm@master/arm.json"
-          )
+          const armReq = axios.get<
+            { mal_id?: number; annict_id?: number; anilist_id?: number }[]
+          >("https://cdn.jsdelivr.net/gh/kawaiioverflow/arm@master/arm.json")
 
-          {
+          if (targetService === TARGET_SERVICE_MAL) {
             let offset = 0
             // eslint-disable-next-line no-constant-condition
             while (true) {

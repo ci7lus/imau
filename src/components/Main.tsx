@@ -1,7 +1,17 @@
-import { Center, SegmentedControl, SimpleGrid, Space, Text } from '@mantine/core'
+import {
+  Center,
+  SegmentedControl,
+  SimpleGrid,
+  Space,
+  Text,
+} from "@mantine/core"
 import { useLocalStorageValue } from "@mantine/hooks"
 import { useState } from "react"
-import { TARGET_SERVICE_ANILIST, TARGET_SERVICE_MAL } from '../constants'
+import {
+  TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
+  TargetService,
+} from "../constants"
 import { AniListLogin } from "./AniListLogin"
 import { AnnictLogin } from "./AnnictLogin"
 import { CheckDiff } from "./CheckDiff"
@@ -17,14 +27,19 @@ export const Main = () => {
     key: "MAL_ACCESS_TOKEN",
     defaultValue: "",
   })
-  const [aniListAccessToken, setAniListAccessToken] = useLocalStorageValue<string>({
-    key: "ANILIST_ACCESS_TOKEN",
-    defaultValue: "",
-  })
+  const [aniListAccessToken, setAniListAccessToken] =
+    useLocalStorageValue<string>({
+      key: "ANILIST_ACCESS_TOKEN",
+      defaultValue: "",
+    })
   const [annictConnected, setAnnictConnected] = useState(false)
   const [malConnected, setMalConnected] = useState(false)
   const [aniListConnected, setAniListConnected] = useState(false)
-  const [target, setTarget] = useState(TARGET_SERVICE_MAL)
+  const [target, setTarget] = useState<TargetService>(TARGET_SERVICE_MAL)
+  const targetConnected =
+    target === TARGET_SERVICE_MAL ? malConnected : aniListConnected
+  const targetAccessToken =
+    target === TARGET_SERVICE_MAL ? malAccessToken : aniListAccessToken
   return (
     <>
       <FirstView />
@@ -32,7 +47,7 @@ export const Main = () => {
       <Center>
         <SegmentedControl
           value={target}
-          onChange={setTarget}
+          onChange={(s) => setTarget(s as TargetService)}
           data={[
             {
               label: "MyAnimeList",
@@ -52,22 +67,27 @@ export const Main = () => {
           setAnnictToken={setAnnictToken}
           setAnnictConnected={setAnnictConnected}
         />
-        {target === TARGET_SERVICE_MAL && <MALLogin
-          malAccessToken={malAccessToken}
-          setMalAccessToken={setMalAccessToken}
-          setMalConnected={setMalConnected}
-        />}
-        {target === TARGET_SERVICE_ANILIST && <AniListLogin
-          aniListAccessToken={aniListAccessToken}
-          setAniListAccessToken={setAniListAccessToken}
-          setAniListConnected={setAniListConnected}
-        />}
+        {target === TARGET_SERVICE_MAL && (
+          <MALLogin
+            malAccessToken={malAccessToken}
+            setMalAccessToken={setMalAccessToken}
+            setMalConnected={setMalConnected}
+          />
+        )}
+        {target === TARGET_SERVICE_ANILIST && (
+          <AniListLogin
+            aniListAccessToken={aniListAccessToken}
+            setAniListAccessToken={setAniListAccessToken}
+            setAniListConnected={setAniListConnected}
+          />
+        )}
       </SimpleGrid>
       <Space h="lg" />
-      {annictConnected && malConnected ? (
+      {annictConnected && targetConnected ? (
         <CheckDiff
           annictAccessToken={annictToken}
-          malAccessToken={malAccessToken}
+          targetService={target}
+          targetAccessToken={targetAccessToken}
         />
       ) : (
         <Center m="lg">
