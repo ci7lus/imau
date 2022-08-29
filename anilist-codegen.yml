@@ -1,0 +1,12 @@
+schema: ./anilist-schema.json
+documents: ./gql-documents/anilist/*.gql
+generates:
+  ./src/aniListGql.ts:
+    plugins:
+      - add:
+          content: "/* eslint-disable */"
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      avoidOptionals: true

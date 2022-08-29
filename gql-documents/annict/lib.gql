@@ -1,0 +1,45 @@
+query queryLibrary($state: StatusState!, $after: String) {
+  viewer {
+    works(state: $state, after: $after) {
+      nodes {
+        id
+        annictId
+        malAnimeId
+        titleEn
+        titleRo
+        title
+        noEpisodes
+        episodes {
+          nodes {
+            viewerDidTrack
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        endCursor
+      }
+    }
+  }
+}
+
+query queryWorks($workIds: [Int!]) {
+  searchWorks(annictIds: $workIds) {
+    nodes {
+      id
+      annictId
+      malAnimeId
+      titleEn
+      titleRo
+      title
+      noEpisodes
+      episodes {
+        nodes {
+          viewerDidTrack
+        }
+      }
+      viewerStatusState
+    }
+  }
+}
