@@ -1,15 +1,12 @@
 import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
 import { useState } from "react"
+import { ANNICT_TO_ANILIST_STATUS_MAP } from "../aniList"
+import { generateGqlClient } from "../aniListApiEntry"
 import { StatusState } from "../annictGql"
-import {
-  TARGET_SERVICE_ANILIST,
-  TARGET_SERVICE_MAL,
-  TargetService,
-} from "../constants"
+import { TARGET_SERVICE_URLS, TargetService } from "../constants"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
-import { generateGqlClient } from "../aniListApiEntry"
 
 export const DoSync = ({
   checks,
@@ -56,26 +53,45 @@ export const DoSync = ({
               if (!diff) {
                 continue
               }
-              const { work } = diff
+              const { work, target } = diff
               if (!work.malId) {
                 setSuccessCount((i) => i + 1)
                 continue
               }
               setProcessing(work)
               try {
-                if (work.status === StatusState.NO_STATE) {
-                  await mal.deleteAnimeStatus({ id: work.malId })
-                } else {
-                  await mal.updateAnimeStatus({
-                    id: work.malId,
-                    status: ANNICT_TO_MAL_STATUS_MAP[work.status],
-                    num_watched_episodes: work.noEpisodes
-                      ? work.status === StatusState.WATCHED
-                        ? 1
-                        : undefined
-                      : work.watchedEpisodeCount,
-                  })
+                if (targetService === "mal") {
+                  if (work.status === StatusState.NO_STATE) {
+                    await mal.deleteAnimeStatus({ id: work.malId })
+                  } else {
+                    await mal.updateAnimeStatus({
+                      id: work.malId,
+                      status: ANNICT_TO_MAL_STATUS_MAP[work.status],
+                      num_watched_episodes: work.noEpisodes
+                        ? work.status === StatusState.WATCHED
+                          ? 1
+                          : undefined
+                        : work.watchedEpisodeCount,
+                    })
+                  }
+                } else if (target) {
+                  const aniListId = parseInt(target.id)
+                  if (work.status === StatusState.NO_STATE) {
+                    await aniList.deleteMediaStatus({ id: aniListId })
+                  } else {
+                    await aniList.updateMediaStatus({
+                      id: aniListId,
+                      status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
+                      numWatchedEpisodes: work.noEpisodes
+                        ? work.status === StatusState.WATCHED
+                          ? 1
+                          : null
+                        : work.watchedEpisodeCount,
+                      priority: null,
+                    })
+                  }
                 }
+
                 await sleep(500)
                 setSuccessCount((i) => i + 1)
                 setChecks((checks) => {
@@ -121,7 +137,7 @@ export const DoSync = ({
           {failedWorks.map((work) => (
             <Anchor
               key={work.annictId}
-              href={`https://myanimelist.net/anime/${work.malId}`}
+              href={`${TARGET_SERVICE_URLS[targetService]}${work.malId}`}
             >
               <Text>{work.title}</Text>
             </Anchor>

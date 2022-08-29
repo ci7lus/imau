@@ -1,21 +1,13 @@
 import { Button } from "@mantine/core"
 import axios from "axios"
 import { useMemo, useRef, useState } from "react"
-import {
-  ANILIST_TO_ANNICT_STATUS_MAP,
-  ANNICT_TO_ANILIST_STATUS_MAP,
-} from "../aniList"
+import { ANILIST_TO_ANNICT_STATUS_MAP } from "../aniList"
 import { generateGqlClient as generateAniListGqlClient } from "../aniListApiEntry"
-import { MediaListSort, MediaListStatus } from "../aniListGql"
+import { MediaListSort } from "../aniListGql"
 import { generateGqlClient } from "../annictApiEntry"
 import { queryLibraryQuery, StatusState } from "../annictGql"
 import { TARGET_SERVICE_MAL, TargetService } from "../constants"
-import {
-  ANNICT_TO_MAL_STATUS_MAP,
-  MAL_TO_ANNICT_STATUS_MAP,
-  MALAnimeStatus,
-  MALAPI,
-} from "../mal"
+import { MAL_TO_ANNICT_STATUS_MAP, MALAPI } from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
@@ -237,16 +229,6 @@ export const DiffFetchButton: React.FC<{
                 return entry.anilist_id?.toString() ?? null
             }
           }
-          const getTargetStatus = (
-            status: keyof typeof StatusState
-          ): MALAnimeStatus | keyof typeof MediaListStatus | null => {
-            switch (targetService) {
-              case "mal":
-                return ANNICT_TO_MAL_STATUS_MAP[status]
-              default:
-                return ANNICT_TO_ANILIST_STATUS_MAP[status] ?? null
-            }
-          }
 
           const missingWorks: AnimeWork[] = []
           const diffs = works
@@ -268,9 +250,10 @@ export const DiffFetchButton: React.FC<{
                   work,
                   target: status
                     ? {
-                        status: getTargetStatus(status.status),
+                        status: status.status,
                         watchedEpisodeCount: status.watchedEpisodeCount,
                         title: status.title,
+                        id: status.id,
                       }
                     : undefined,
                 }
@@ -326,9 +309,10 @@ export const DiffFetchButton: React.FC<{
                   status: work.viewerStatusState || StatusState.NO_STATE,
                 },
                 target: {
-                  status: getTargetStatus(serviceWork.status),
+                  status: serviceWork.status,
                   watchedEpisodeCount: serviceWork.watchedEpisodeCount,
                   title: serviceWork.title,
+                  id: serviceWork.id,
                 },
               }
               return diff

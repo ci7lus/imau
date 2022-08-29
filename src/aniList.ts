@@ -13,11 +13,13 @@ export const ANILIST_TO_ANNICT_STATUS_MAP: {
 }
 
 export const ANNICT_TO_ANILIST_STATUS_MAP: {
-  [key in keyof typeof StatusState]?: keyof typeof MediaListStatus
+  [key in keyof typeof StatusState]: MediaListStatus
 } = {
-  WATCHING: "Current",
-  WATCHED: "Completed",
-  ON_HOLD: "Paused",
-  STOP_WATCHING: "Dropped",
-  WANNA_WATCH: "Planning",
+  WATCHING: MediaListStatus.Current,
+  WATCHED: MediaListStatus.Completed,
+  ON_HOLD: MediaListStatus.Paused,
+  STOP_WATCHING: MediaListStatus.Dropped,
+  WANNA_WATCH: MediaListStatus.Planning,
+  // 実際には来ない
+  NO_STATE: MediaListStatus.Dropped,
 }

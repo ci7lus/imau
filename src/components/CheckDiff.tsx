@@ -112,6 +112,7 @@ export const CheckDiff = ({
           setChecks={setChecks}
           ignores={ignores}
           setIgnores={setIgnores}
+          targetService={targetService}
         />
       </ScrollArea>
       {targetAccessToken && (

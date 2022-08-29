@@ -1,6 +1,4 @@
-import { MediaListStatus } from "./aniListGql"
 import { StatusState } from "./annictGql"
-import { MALAnimeStatus } from "./mal"
 
 export type AnimeWork = {
   annictId: number
@@ -17,7 +15,8 @@ export type StatusDiff = {
   work: AnimeWork
   target?: {
     watchedEpisodeCount: number
-    status: MALAnimeStatus | keyof typeof MediaListStatus | null
+    status: keyof typeof StatusState
     title: string
+    id: string
   }
 }

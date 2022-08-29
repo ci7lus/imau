@@ -16,3 +16,11 @@ export const TARGET_SERVICE_ANILIST = "anilist"
 export type TargetService =
   | typeof TARGET_SERVICE_MAL
   | typeof TARGET_SERVICE_ANILIST
+export const TARGET_SERVICE_NAMES: Record<TargetService, string> = {
+  mal: "MyAnimeList",
+  anilist: "AniList",
+}
+export const TARGET_SERVICE_URLS: Record<TargetService, string> = {
+  mal: "https://myanimelist.net/anime/",
+  anilist: "https://anilist.co/anime/",
+}

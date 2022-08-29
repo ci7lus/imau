@@ -10,6 +10,7 @@ import { useState } from "react"
 import {
   TARGET_SERVICE_ANILIST,
   TARGET_SERVICE_MAL,
+  TARGET_SERVICE_NAMES,
   TargetService,
 } from "../constants"
 import { AniListLogin } from "./AniListLogin"
@@ -50,11 +51,11 @@ export const Main = () => {
           onChange={(s) => setTarget(s as TargetService)}
           data={[
             {
-              label: "MyAnimeList",
+              label: TARGET_SERVICE_NAMES[TARGET_SERVICE_MAL],
               value: TARGET_SERVICE_MAL,
             },
             {
-              label: "AniList",
+              label: TARGET_SERVICE_NAMES[TARGET_SERVICE_ANILIST],
               value: TARGET_SERVICE_ANILIST,
             },
           ]}
