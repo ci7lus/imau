@@ -1,0 +1,11 @@
+mutation updateMediaStatus($id: Int!, $status: MediaListStatus, $numWatchedEpisodes: Int, $priority: Int) {
+    UpdateMediaListEntries(ids: [$id], status: $status, progress: $numWatchedEpisodes, priority: $priority) {
+        id
+    }
+}
+
+mutation deleteMediaStatus($id: Int!) {
+    DeleteMediaListEntry(id: $id) {
+        deleted
+    }
+}

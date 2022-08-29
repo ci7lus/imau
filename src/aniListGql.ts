@@ -4614,6 +4614,33 @@ export type GetMeQuery = {
   } | null
 }
 
+export type UpdateMediaStatusMutationVariables = Exact<{
+  id: Scalars["Int"]
+  status: InputMaybe<MediaListStatus>
+  numWatchedEpisodes: InputMaybe<Scalars["Int"]>
+  priority: InputMaybe<Scalars["Int"]>
+}>
+
+export type UpdateMediaStatusMutation = {
+  __typename?: "Mutation"
+  UpdateMediaListEntries: Array<{
+    __typename?: "MediaList"
+    id: number
+  } | null> | null
+}
+
+export type DeleteMediaStatusMutationVariables = Exact<{
+  id: Scalars["Int"]
+}>
+
+export type DeleteMediaStatusMutation = {
+  __typename?: "Mutation"
+  DeleteMediaListEntry: {
+    __typename?: "Deleted"
+    deleted: boolean | null
+  } | null
+}
+
 export const QueryLibraryDocument = gql`
   query queryLibrary($userId: Int!, $status: MediaListStatus!, $chunk: Int!) {
     MediaListCollection(
@@ -4669,6 +4696,30 @@ export const GetMeDocument = gql`
       avatar {
         large
       }
+    }
+  }
+`
+export const UpdateMediaStatusDocument = gql`
+  mutation updateMediaStatus(
+    $id: Int!
+    $status: MediaListStatus
+    $numWatchedEpisodes: Int
+    $priority: Int
+  ) {
+    UpdateMediaListEntries(
+      ids: [$id]
+      status: $status
+      progress: $numWatchedEpisodes
+      priority: $priority
+    ) {
+      id
+    }
+  }
+`
+export const DeleteMediaStatusDocument = gql`
+  mutation deleteMediaStatus($id: Int!) {
+    DeleteMediaListEntry(id: $id) {
+      deleted
     }
   }
 `
@@ -4730,6 +4781,36 @@ export function getSdk(
           }),
         "getMe",
         "query"
+      )
+    },
+    updateMediaStatus(
+      variables: UpdateMediaStatusMutationVariables,
+      requestHeaders?: Dom.RequestInit["headers"]
+    ): Promise<UpdateMediaStatusMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateMediaStatusMutation>(
+            UpdateMediaStatusDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        "updateMediaStatus",
+        "mutation"
+      )
+    },
+    deleteMediaStatus(
+      variables: DeleteMediaStatusMutationVariables,
+      requestHeaders?: Dom.RequestInit["headers"]
+    ): Promise<DeleteMediaStatusMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<DeleteMediaStatusMutation>(
+            DeleteMediaStatusDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        "deleteMediaStatus",
+        "mutation"
       )
     },
   }
