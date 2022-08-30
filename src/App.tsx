@@ -29,12 +29,20 @@ export const App = () => {
               imau made with ❤️ by{" "}
               <Anchor
                 size="sm"
+                href="https://annict.com/@kokoro"
+                target="_blank"
+              >
+                @kokoro@annict.com
+              </Anchor>{" "}
+              (
+              <Anchor
+                size="sm"
                 href="https://myanimelist.net/profile/kanoshiho"
                 target="_blank"
               >
                 @kanoshiho@myanimelist.net
-              </Anchor>{" "}
-              (
+              </Anchor>
+              ,{" "}
               <Anchor
                 size="sm"
                 href="https://anilist.co/user/neneka/"
