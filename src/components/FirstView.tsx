@@ -13,6 +13,10 @@ export const FirstView = () => {
         to{" "}
         <Anchor href="https://myanimelist.net" target="_blank" size="lg">
           MAL
+        </Anchor>
+        {" / "}
+        <Anchor href="https://anilist.co" target="_blank" size="lg">
+          AniList
         </Anchor>{" "}
         to play{" "}
         <Anchor href="https://animemusicquiz.com/" target="_blank" size="lg">

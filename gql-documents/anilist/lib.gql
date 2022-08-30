@@ -1,0 +1,39 @@
+query queryLibrary($userId: Int!, $sort: [MediaListSort!]!, $perChunk: Int!, $chunk: Int!) {
+  MediaListCollection(userId: $userId, sort: $sort, perChunk: $perChunk, chunk: $chunk, type: ANIME) {
+    lists {
+      entries {
+        id
+        progress
+        status
+        media {
+          id
+          idMal
+          title {
+            english
+            romaji
+            native
+          }
+          episodes
+        }
+      }
+    }
+    hasNextChunk
+  }
+}
+
+query queryWorks($workIds: [Int!]!) {
+  MediaList(mediaId_in: $workIds) {
+    status
+    progress
+    media {
+      id
+      idMal
+      title {
+        english
+        romaji
+        native
+      }
+      episodes
+    }
+  }
+}

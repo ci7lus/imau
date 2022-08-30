@@ -1,0 +1,9 @@
+query getMe {
+    Viewer {
+        id
+        name
+        avatar {
+            large
+        }
+    }
+}

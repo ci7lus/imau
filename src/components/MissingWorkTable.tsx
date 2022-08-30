@@ -1,8 +1,38 @@
 import { Anchor, List, Table, Text } from "@mantine/core"
-import { WATCH_STATUS_MAP } from "../constants"
+import { useCallback } from "react"
+import {
+  TargetService,
+  TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_NAMES,
+  WATCH_STATUS_MAP,
+} from "../constants"
 import { AnimeWork } from "../types"
 
-export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
+export const MissingWorkTable = ({
+  works,
+  targetService,
+}: {
+  works: AnimeWork[]
+  targetService: TargetService
+}) => {
+  const getSearchPage = useCallback(
+    (term: string) => {
+      switch (targetService) {
+        case TARGET_SERVICE_MAL:
+          return `https://myanimelist.net/search/all?q=${encodeURIComponent(
+            term
+          )}&cat=all`
+        case TARGET_SERVICE_ANILIST:
+          return `https://anilist.co/search/anime?search=${encodeURIComponent(
+            term
+          )}`
+        default:
+          break
+      }
+    },
+    [targetService]
+  )
   return (
     <Table>
       <thead>
@@ -22,13 +52,13 @@ export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
                 {`${work.title} (${work.annictId})`}
               </Anchor>
               <br />
-              <Text size="sm">Search in MAL:</Text>
+              <Text size="sm">
+                Search in {TARGET_SERVICE_NAMES[targetService]}:
+              </Text>
               <List size="sm" withPadding>
                 <List.Item>
                   <Anchor
-                    href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                      work.title
-                    )}&cat=all`}
+                    href={getSearchPage(work.title)}
                     target="_blank"
                     size="sm"
                   >
@@ -38,9 +68,7 @@ export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
                 {work.titleEn && (
                   <List.Item>
                     <Anchor
-                      href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                        work.titleEn
-                      )}&cat=all`}
+                      href={getSearchPage(work.titleEn)}
                       target="_blank"
                       size="sm"
                     >
@@ -51,9 +79,7 @@ export const MissingWorkTable = ({ works }: { works: AnimeWork[] }) => {
                 {work.titleRo && (
                   <List.Item>
                     <Anchor
-                      href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                        work.titleRo
-                      )}&cat=all`}
+                      href={getSearchPage(work.titleRo)}
                       target="_blank"
                       size="sm"
                     >

@@ -1,9 +1,15 @@
 import { ActionIcon, Anchor, Checkbox, Table, Text } from "@mantine/core"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Forbid } from "tabler-icons-react"
-import { WATCH_STATUS_MAP } from "../constants"
-import { MAL_TO_ANNICT_STATUS_MAP } from "../mal"
-import { StatusDiff } from "../types"
+import {
+  TARGET_SERVICE_NAMES,
+  TARGET_SERVICE_URLS,
+  TargetService,
+  WATCH_STATUS_MAP,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_ANILIST,
+} from "../constants"
+import { AnimeWork, StatusDiff } from "../types"
 
 export const DiffTable = ({
   diffs,
@@ -11,16 +17,28 @@ export const DiffTable = ({
   setChecks,
   ignores,
   setIgnores,
+  targetService,
 }: {
   diffs: StatusDiff[]
   checks: Set<number>
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
   ignores: number[]
   setIgnores: React.Dispatch<React.SetStateAction<number[]>>
+  targetService: TargetService
 }) => {
   const sortedMemo = useMemo(
     () => diffs.sort((_, b) => (ignores.includes(b.work.annictId) ? -1 : 0)),
     [diffs]
+  )
+  const getRelationId = useCallback(
+    (work: AnimeWork) => {
+      if (targetService === TARGET_SERVICE_MAL) {
+        return work.malId
+      } else if (targetService === TARGET_SERVICE_ANILIST) {
+        return work.aniListId
+      }
+    },
+    [targetService]
   )
   return (
     <Table striped highlightOnHover>
@@ -29,12 +47,12 @@ export const DiffTable = ({
           <th>Include?</th>
           <th>Title</th>
           <th>Annict</th>
-          <th>MAL</th>
+          <th>{TARGET_SERVICE_NAMES[targetService]}</th>
           <th>Ignore</th>
         </tr>
       </thead>
       <tbody>
-        {sortedMemo.map(({ work, mal }) => (
+        {sortedMemo.map(({ work, target }) => (
           <tr
             key={work.annictId}
             style={{
@@ -69,13 +87,17 @@ export const DiffTable = ({
               <>
                 <br />
                 <Anchor
-                  href={`https://myanimelist.net/anime/${work.malId}`}
+                  href={`${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                    work
+                  )}`}
                   target="_blank"
                   size="sm"
                 >
-                  {mal
-                    ? `${mal?.title} (${work.malId})`
-                    : `https://myanimelist.net/anime/${work.malId}`}
+                  {target
+                    ? `${target.title} (${getRelationId(work)})`
+                    : `${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                        work
+                      )}`}
                 </Anchor>
               </>
             </td>
@@ -87,9 +109,9 @@ export const DiffTable = ({
             </td>
             <td>
               <Text>
-                {mal ? (
-                  `${WATCH_STATUS_MAP[MAL_TO_ANNICT_STATUS_MAP[mal.status]]} (${
-                    mal.watchedEpisodeCount
+                {target ? (
+                  `${WATCH_STATUS_MAP[target.status]} (${
+                    target.watchedEpisodeCount
                   })`
                 ) : (
                   <Text size="sm" color="gray">
