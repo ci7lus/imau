@@ -80,8 +80,8 @@ export const DoSync = ({
                   targetService === TARGET_SERVICE_ANILIST &&
                   work.aniListId
                 ) {
-                  if (work.status === StatusState.NO_STATE) {
-                    await aniList.deleteMediaStatus({ id: work.aniListId })
+                  if (work.status === StatusState.NO_STATE && target?.id) {
+                    await aniList.deleteMediaStatus({ id: parseInt(target.id) })
                   } else if (target?.id) {
                     // 既存エントリ更新
                     await aniList.updateMediaStatus({
