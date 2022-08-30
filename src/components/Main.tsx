@@ -36,7 +36,10 @@ export const Main = () => {
   const [annictConnected, setAnnictConnected] = useState(false)
   const [malConnected, setMalConnected] = useState(false)
   const [aniListConnected, setAniListConnected] = useState(false)
-  const [target, setTarget] = useState<TargetService>(TARGET_SERVICE_MAL)
+  const [target, setTarget] = useLocalStorageValue<TargetService>({
+    key: "TARGET_SERVICE",
+    defaultValue: TARGET_SERVICE_MAL,
+  })
   const targetConnected =
     target === TARGET_SERVICE_MAL ? malConnected : aniListConnected
   const targetAccessToken =
