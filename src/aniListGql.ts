@@ -4619,7 +4619,7 @@ export type GetMeQuery = {
 export type CreateMediaStatusMutationVariables = Exact<{
   id: Scalars["Int"]
   status: MediaListStatus
-  numWatchedEpisodes: InputMaybe<Scalars["Int"]>
+  numWatchedEpisodes: Scalars["Int"]
 }>
 
 export type CreateMediaStatusMutation = {
@@ -4630,7 +4630,7 @@ export type CreateMediaStatusMutation = {
 export type UpdateMediaStatusMutationVariables = Exact<{
   id: Scalars["Int"]
   status: MediaListStatus
-  numWatchedEpisodes: InputMaybe<Scalars["Int"]>
+  numWatchedEpisodes: Scalars["Int"]
 }>
 
 export type UpdateMediaStatusMutation = {
@@ -4721,7 +4721,7 @@ export const CreateMediaStatusDocument = gql`
   mutation createMediaStatus(
     $id: Int!
     $status: MediaListStatus!
-    $numWatchedEpisodes: Int
+    $numWatchedEpisodes: Int!
   ) {
     SaveMediaListEntry(
       mediaId: $id
@@ -4736,7 +4736,7 @@ export const UpdateMediaStatusDocument = gql`
   mutation updateMediaStatus(
     $id: Int!
     $status: MediaListStatus!
-    $numWatchedEpisodes: Int
+    $numWatchedEpisodes: Int!
   ) {
     UpdateMediaListEntries(
       ids: [$id]

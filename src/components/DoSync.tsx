@@ -89,7 +89,7 @@ export const DoSync = ({
                       numWatchedEpisodes: work.noEpisodes
                         ? work.status === StatusState.WATCHED
                           ? 1
-                          : null
+                          : 0
                         : work.watchedEpisodeCount,
                     })
                   } else {
@@ -100,7 +100,7 @@ export const DoSync = ({
                       numWatchedEpisodes: work.noEpisodes
                         ? work.status === StatusState.WATCHED
                           ? 1
-                          : null
+                          : 0
                         : work.watchedEpisodeCount,
                     })
                   }
