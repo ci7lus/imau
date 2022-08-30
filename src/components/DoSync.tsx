@@ -1,5 +1,5 @@
 import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { ANNICT_TO_ANILIST_STATUS_MAP } from "../aniList"
 import { generateGqlClient } from "../aniListApiEntry"
 import { StatusState } from "../annictGql"
@@ -19,14 +19,12 @@ export const DoSync = ({
   diffs,
   targetService,
   targetAccessToken,
-  disabled,
 }: {
   checks: number[]
   setChecks: React.Dispatch<React.SetStateAction<Set<number>>>
   diffs: StatusDiff[]
   targetService: TargetService
   targetAccessToken: string
-  disabled: boolean
 }) => {
   const [isStarted, setIsStarted] = useState(false)
   const [checkCountOnStart, setCheckCountOnStart] = useState(checks.length)
@@ -38,16 +36,19 @@ export const DoSync = ({
   const [processing, setProcessing] = useState<AnimeWork | null>(null)
   const mal = new MALAPI(targetAccessToken)
   const aniList = generateGqlClient(targetAccessToken)
+  const abortRef = useRef(false)
   return (
     <>
       <Center>
         <Button
-          disabled={disabled}
-          color={checks.length === 0 || isStarted ? "gray" : "primary"}
+          disabled={checks.length === 0}
+          color={checks.length === 0 ? "gray" : isStarted ? "red" : "primary"}
           onClick={async () => {
             if (isStarted) {
+              abortRef.current = true
               return
             }
+            abortRef.current = false
             setCheckCountOnStart(checks.length)
             setSuccessCount(0)
             setFailedCount(0)
@@ -123,12 +124,15 @@ export const DoSync = ({
                 setFailedCount((i) => i + 1)
                 await sleep(500)
               }
+              if (abortRef.current) {
+                break
+              }
             }
             setProcessing(null)
             setIsStarted(false)
           }}
         >
-          Sync
+          {isStarted ? "Stop" : "Sync"}
         </Button>
       </Center>
       <Space h="md" />

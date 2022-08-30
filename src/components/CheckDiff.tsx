@@ -124,7 +124,6 @@ export const CheckDiff = ({
             diffs={diffs}
             targetService={targetService}
             targetAccessToken={targetAccessToken}
-            disabled={0 === checks.size}
           />
         </>
       )}
