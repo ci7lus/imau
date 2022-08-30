@@ -10,7 +10,7 @@ import { useLocalStorage } from "@mantine/hooks"
 import { useMemo, useState } from "react"
 import { Eraser } from "tabler-icons-react"
 import { StatusState } from "../annictGql"
-import { TargetService } from "../constants"
+import { TargetService, TARGET_SERVICE_MAL } from "../constants"
 import { AnimeWork, StatusDiff } from "../types"
 import { DiffFetchButton } from "./DiffFetchButton"
 import { DiffTable } from "./DiffTable"
@@ -31,7 +31,9 @@ export const CheckDiff = ({
   const [missingWorks, setMissingWorks] = useState<AnimeWork[]>([])
   const idMap = useMemo(() => diffs.map((diff) => diff.work.annictId), [diffs])
   const [ignores, setIgnores] = useLocalStorage<number[]>({
-    key: "ignoreList",
+    key: `ignoreList${
+      targetService !== TARGET_SERVICE_MAL ? targetService : ""
+    }`,
     serialize: (list) => JSON.stringify(list),
     deserialize: (str) => {
       try {
