@@ -3,7 +3,12 @@ import { useState } from "react"
 import { ANNICT_TO_ANILIST_STATUS_MAP } from "../aniList"
 import { generateGqlClient } from "../aniListApiEntry"
 import { StatusState } from "../annictGql"
-import { TARGET_SERVICE_URLS, TargetService } from "../constants"
+import {
+  TARGET_SERVICE_URLS,
+  TargetService,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_ANILIST,
+} from "../constants"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
 import { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
@@ -53,19 +58,15 @@ export const DoSync = ({
               if (!diff) {
                 continue
               }
-              const { work, target } = diff
-              if (!target?.id) {
-                setSuccessCount((i) => i + 1)
-                continue
-              }
+              const { work } = diff
               setProcessing(work)
               try {
-                if (targetService === "mal") {
+                if (targetService === TARGET_SERVICE_MAL && work.malId) {
                   if (work.status === StatusState.NO_STATE) {
-                    await mal.deleteAnimeStatus({ id: target.id })
+                    await mal.deleteAnimeStatus({ id: work.malId })
                   } else {
                     await mal.updateAnimeStatus({
-                      id: target.id,
+                      id: work.malId,
                       status: ANNICT_TO_MAL_STATUS_MAP[work.status],
                       num_watched_episodes: work.noEpisodes
                         ? work.status === StatusState.WATCHED
@@ -74,8 +75,11 @@ export const DoSync = ({
                         : work.watchedEpisodeCount,
                     })
                   }
-                } else if (target) {
-                  const aniListId = parseInt(target.id)
+                } else if (
+                  targetService === TARGET_SERVICE_ANILIST &&
+                  work.aniListId
+                ) {
+                  const aniListId = parseInt(work.aniListId)
                   if (work.status === StatusState.NO_STATE) {
                     await aniList.deleteMediaStatus({ id: aniListId })
                   } else {
@@ -90,6 +94,10 @@ export const DoSync = ({
                       priority: null,
                     })
                   }
+                } else {
+                  setProcessing(null)
+                  setSuccessCount((i) => i + 1)
+                  continue
                 }
 
                 await sleep(500)

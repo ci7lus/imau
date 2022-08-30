@@ -136,7 +136,7 @@ export const DiffFetchButton: React.FC<{
                       }
 
                       return {
-                        id: m.id.toString(),
+                        id: m.media.id.toString(),
                         title:
                           m.media.title.english ??
                           m.media.title.romaji ??
@@ -162,6 +162,14 @@ export const DiffFetchButton: React.FC<{
             }
           }
 
+          const arm = (await armReq).data
+
+          // Annict のレスポンスには AniList ID が含まれないので arm を利用する
+          const queryAniListIdByAnnictId = (annictId: number) =>
+            arm
+              .find((entry) => entry.annict_id === annictId)
+              ?.anilist_id?.toString() ?? null
+
           let after: string | null = null
           const works: AnimeWork[] = []
           for (const status of statuses) {
@@ -180,6 +188,7 @@ export const DiffFetchButton: React.FC<{
                     const w: AnimeWork = {
                       annictId: work.annictId,
                       malId: work.malAnimeId,
+                      aniListId: queryAniListIdByAnnictId(work.annictId),
                       title: work.title,
                       titleEn: work.titleEn || null,
                       titleRo: work.titleRo || null,
@@ -202,20 +211,15 @@ export const DiffFetchButton: React.FC<{
             }
           }
 
-          const arm = (await armReq).data
-
           // 現在有効なターゲットの作品IDなどを取得する関数群
           const getTargetWorkId = (work: AnimeWork): string | null => {
             switch (targetService) {
               case "mal":
                 return work.malId
+              case "anilist":
+                return work.aniListId
               default:
-                // Annict のレスポンスには AniList ID が含まれないので arm を利用する
-                return (
-                  arm
-                    .find((entry) => entry.annict_id === work.annictId)
-                    ?.anilist_id?.toString() ?? null
-                )
+                throw new Error("Unknown target service")
             }
           }
           const getTargetArmId = (entry: {
@@ -299,6 +303,7 @@ export const DiffFetchButton: React.FC<{
                 work: {
                   annictId: work.annictId,
                   malId: work.malAnimeId,
+                  aniListId: queryAniListIdByAnnictId(work.annictId),
                   title: work.title,
                   titleEn: work.titleEn || null,
                   titleRo: work.titleRo || null,

@@ -3,6 +3,7 @@ import { StatusState } from "./annictGql"
 export type AnimeWork = {
   annictId: number
   malId: string | null
+  aniListId: string | null
   title: string
   titleEn: string | null
   titleRo: string | null
