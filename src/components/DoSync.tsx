@@ -54,7 +54,7 @@ export const DoSync = ({
                 continue
               }
               const { work, target } = diff
-              if (!work.malId) {
+              if (!target?.id) {
                 setSuccessCount((i) => i + 1)
                 continue
               }
@@ -62,10 +62,10 @@ export const DoSync = ({
               try {
                 if (targetService === "mal") {
                   if (work.status === StatusState.NO_STATE) {
-                    await mal.deleteAnimeStatus({ id: work.malId })
+                    await mal.deleteAnimeStatus({ id: target.id })
                   } else {
                     await mal.updateAnimeStatus({
-                      id: work.malId,
+                      id: target.id,
                       status: ANNICT_TO_MAL_STATUS_MAP[work.status],
                       num_watched_episodes: work.noEpisodes
                         ? work.status === StatusState.WATCHED

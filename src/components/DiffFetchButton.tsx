@@ -233,12 +233,13 @@ export const DiffFetchButton: React.FC<{
           const missingWorks: AnimeWork[] = []
           const diffs = works
             .map((work) => {
-              if (!work.malId) {
+              const workId = getTargetWorkId(work)
+              if (!workId) {
                 missingWorks.push(work)
                 return false
               }
               const status = serviceStatuses.find(
-                (status) => status?.id === getTargetWorkId(work)
+                (status) => status?.id === workId
               )
               if (
                 !status ||
