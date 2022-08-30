@@ -91,7 +91,6 @@ export const DoSync = ({
                           ? 1
                           : null
                         : work.watchedEpisodeCount,
-                      priority: null,
                     })
                   }
                 } else {

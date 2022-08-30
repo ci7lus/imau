@@ -4620,7 +4620,6 @@ export type UpdateMediaStatusMutationVariables = Exact<{
   id: Scalars["Int"]
   status: MediaListStatus
   numWatchedEpisodes: InputMaybe<Scalars["Int"]>
-  priority: InputMaybe<Scalars["Int"]>
 }>
 
 export type UpdateMediaStatusMutation = {
@@ -4712,13 +4711,11 @@ export const UpdateMediaStatusDocument = gql`
     $id: Int!
     $status: MediaListStatus!
     $numWatchedEpisodes: Int
-    $priority: Int
   ) {
     UpdateMediaListEntries(
       ids: [$id]
       status: $status
       progress: $numWatchedEpisodes
-      priority: $priority
     ) {
       id
     }
