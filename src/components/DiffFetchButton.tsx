@@ -52,6 +52,7 @@ export const DiffFetchButton: React.FC<{
         try {
           const serviceStatuses: {
             id: string
+            relationId: string | null
             title: string
             status: keyof typeof StatusState
             watchedEpisodeCount: number
@@ -75,6 +76,7 @@ export const DiffFetchButton: React.FC<{
               serviceStatuses.push(
                 ...result.data.data.map((d) => ({
                   id: d.node.id.toString(),
+                  relationId: null,
                   title: d.node.title,
                   status: MAL_TO_ANNICT_STATUS_MAP[d.list_status.status],
                   watchedEpisodeCount: d.list_status.num_episodes_watched,
@@ -136,7 +138,8 @@ export const DiffFetchButton: React.FC<{
                       }
 
                       return {
-                        id: m.media.id.toString(),
+                        id: m.id.toString(),
+                        relationId: m.media.id.toString(),
                         title:
                           m.media.title.english ??
                           m.media.title.romaji ??
@@ -166,9 +169,8 @@ export const DiffFetchButton: React.FC<{
 
           // Annict のレスポンスには AniList ID が含まれないので arm を利用する
           const queryAniListIdByAnnictId = (annictId: number) =>
-            arm
-              .find((entry) => entry.annict_id === annictId)
-              ?.anilist_id?.toString() ?? null
+            arm.find((entry) => entry.annict_id === annictId)?.anilist_id ??
+            null
 
           let after: string | null = null
           const works: AnimeWork[] = []
@@ -217,7 +219,7 @@ export const DiffFetchButton: React.FC<{
               case "mal":
                 return work.malId
               case "anilist":
-                return work.aniListId
+                return work.aniListId?.toString() || null
               default:
                 throw new Error("Unknown target service")
             }
@@ -243,7 +245,8 @@ export const DiffFetchButton: React.FC<{
                 return false
               }
               const status = serviceStatuses.find(
-                (status) => status?.id === workId
+                (status) =>
+                  status?.relationId === workId || status.id === workId
               )
               if (
                 !status ||

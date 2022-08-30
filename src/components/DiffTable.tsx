@@ -1,13 +1,15 @@
 import { ActionIcon, Anchor, Checkbox, Table, Text } from "@mantine/core"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Forbid } from "tabler-icons-react"
 import {
   TARGET_SERVICE_NAMES,
   TARGET_SERVICE_URLS,
   TargetService,
   WATCH_STATUS_MAP,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_ANILIST,
 } from "../constants"
-import { StatusDiff } from "../types"
+import { AnimeWork, StatusDiff } from "../types"
 
 export const DiffTable = ({
   diffs,
@@ -27,6 +29,16 @@ export const DiffTable = ({
   const sortedMemo = useMemo(
     () => diffs.sort((_, b) => (ignores.includes(b.work.annictId) ? -1 : 0)),
     [diffs]
+  )
+  const getRelationId = useCallback(
+    (work: AnimeWork) => {
+      if (targetService === TARGET_SERVICE_MAL) {
+        return work.malId
+      } else if (targetService === TARGET_SERVICE_ANILIST) {
+        return work.aniListId
+      }
+    },
+    [targetService]
   )
   return (
     <Table striped highlightOnHover>
@@ -75,13 +87,17 @@ export const DiffTable = ({
               <>
                 <br />
                 <Anchor
-                  href={`${TARGET_SERVICE_URLS[targetService]}${work.malId}`}
+                  href={`${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                    work
+                  )}`}
                   target="_blank"
                   size="sm"
                 >
                   {target
-                    ? `${target.title} (${work.malId})`
-                    : `${TARGET_SERVICE_URLS[targetService]}${work.malId}`}
+                    ? `${target.title} (${getRelationId(work)})`
+                    : `${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                        work
+                      )}`}
                 </Anchor>
               </>
             </td>

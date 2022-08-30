@@ -58,7 +58,7 @@ export const DoSync = ({
               if (!diff) {
                 continue
               }
-              const { work } = diff
+              const { work, target } = diff
               setProcessing(work)
               try {
                 if (targetService === TARGET_SERVICE_MAL && work.malId) {
@@ -79,12 +79,23 @@ export const DoSync = ({
                   targetService === TARGET_SERVICE_ANILIST &&
                   work.aniListId
                 ) {
-                  const aniListId = parseInt(work.aniListId)
                   if (work.status === StatusState.NO_STATE) {
-                    await aniList.deleteMediaStatus({ id: aniListId })
-                  } else {
+                    await aniList.deleteMediaStatus({ id: work.aniListId })
+                  } else if (target?.id) {
+                    // 既存エントリ更新
                     await aniList.updateMediaStatus({
-                      id: aniListId,
+                      id: parseInt(target.id),
+                      status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
+                      numWatchedEpisodes: work.noEpisodes
+                        ? work.status === StatusState.WATCHED
+                          ? 1
+                          : null
+                        : work.watchedEpisodeCount,
+                    })
+                  } else {
+                    // 新規エントリ
+                    await aniList.createMediaStatus({
+                      id: work.aniListId,
                       status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
                       numWatchedEpisodes: work.noEpisodes
                         ? work.status === StatusState.WATCHED

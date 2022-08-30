@@ -4616,6 +4616,17 @@ export type GetMeQuery = {
   } | null
 }
 
+export type CreateMediaStatusMutationVariables = Exact<{
+  id: Scalars["Int"]
+  status: MediaListStatus
+  numWatchedEpisodes: InputMaybe<Scalars["Int"]>
+}>
+
+export type CreateMediaStatusMutation = {
+  __typename?: "Mutation"
+  SaveMediaListEntry: { __typename?: "MediaList"; id: number } | null
+}
+
 export type UpdateMediaStatusMutationVariables = Exact<{
   id: Scalars["Int"]
   status: MediaListStatus
@@ -4706,6 +4717,21 @@ export const GetMeDocument = gql`
     }
   }
 `
+export const CreateMediaStatusDocument = gql`
+  mutation createMediaStatus(
+    $id: Int!
+    $status: MediaListStatus!
+    $numWatchedEpisodes: Int
+  ) {
+    SaveMediaListEntry(
+      mediaId: $id
+      status: $status
+      progress: $numWatchedEpisodes
+    ) {
+      id
+    }
+  }
+`
 export const UpdateMediaStatusDocument = gql`
   mutation updateMediaStatus(
     $id: Int!
@@ -4786,6 +4812,21 @@ export function getSdk(
           }),
         "getMe",
         "query"
+      )
+    },
+    createMediaStatus(
+      variables: CreateMediaStatusMutationVariables,
+      requestHeaders?: Dom.RequestInit["headers"]
+    ): Promise<CreateMediaStatusMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateMediaStatusMutation>(
+            CreateMediaStatusDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        "createMediaStatus",
+        "mutation"
       )
     },
     updateMediaStatus(
