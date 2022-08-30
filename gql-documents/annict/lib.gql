@@ -1,18 +1,21 @@
-query queryLibrary($state: StatusState!, $after: String) {
+query queryLibrary($states: [StatusState!], $after: String) {
   viewer {
-    works(state: $state, after: $after) {
+    libraryEntries(states: $states, after: $after) {
       nodes {
-        id
-        annictId
-        malAnimeId
-        titleEn
-        titleRo
-        title
-        noEpisodes
-        episodes {
-          nodes {
-            viewerDidTrack
+        work {
+          id
+          annictId
+          malAnimeId
+          titleEn
+          titleRo
+          title
+          noEpisodes
+          episodes {
+            nodes {
+              viewerDidTrack
+            }
           }
+          viewerStatusState
         }
       }
       pageInfo {

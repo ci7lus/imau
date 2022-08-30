@@ -174,43 +174,46 @@ export const DiffFetchButton: React.FC<{
 
           let after: string | null = null
           const works: AnimeWork[] = []
-          for (const status of statuses) {
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-              const result: queryLibraryQuery = await annict.queryLibrary({
-                state: status,
-                after,
-              })
-              const structedWorks =
-                result.viewer?.works?.nodes
-                  ?.map((work) => {
-                    if (!work || !work.annictId || !work.title) {
-                      return
-                    }
-                    const w: AnimeWork = {
-                      annictId: work.annictId,
-                      malId: work.malAnimeId,
-                      aniListId: queryAniListIdByAnnictId(work.annictId),
-                      title: work.title,
-                      titleEn: work.titleEn || null,
-                      titleRo: work.titleRo || null,
-                      noEpisodes: work.noEpisodes,
-                      watchedEpisodeCount:
-                        work?.episodes?.nodes?.filter(
-                          (episode) => episode?.viewerDidTrack
-                        ).length ?? 0,
-                      status,
-                    }
-                    return w
-                  })
-                  .filter((work): work is AnimeWork => !!work) || []
-              works.push(...structedWorks)
-              after = result.viewer?.works?.pageInfo?.endCursor ?? null
-              if (!after || abortRef.current) {
-                break
-              }
-              await sleep(500)
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            const result: queryLibraryQuery = await annict.queryLibrary({
+              after,
+              states: statuses,
+            })
+            const structedWorks =
+              result.viewer?.libraryEntries?.nodes
+                ?.map((entry) => {
+                  const work = entry?.work
+                  if (!work || !work.annictId || !work.title) {
+                    return
+                  }
+                  const w: AnimeWork = {
+                    annictId: work.annictId,
+                    malId: work.malAnimeId,
+                    aniListId: queryAniListIdByAnnictId(work.annictId),
+                    title: work.title,
+                    titleEn: work.titleEn || null,
+                    titleRo: work.titleRo || null,
+                    noEpisodes: work.noEpisodes,
+                    watchedEpisodeCount:
+                      work?.episodes?.nodes?.filter(
+                        (episode) => episode?.viewerDidTrack
+                      ).length ?? 0,
+                    status: work.viewerStatusState || StatusState.NO_STATE,
+                  }
+                  return w
+                })
+                .filter((work): work is AnimeWork => !!work) || []
+            works.push(...structedWorks)
+            after = result.viewer?.libraryEntries?.pageInfo?.endCursor ?? null
+            if (
+              !after ||
+              result.viewer?.libraryEntries?.pageInfo.hasNextPage === false ||
+              abortRef.current
+            ) {
+              break
             }
+            await sleep(500)
           }
 
           // 現在有効なターゲットの作品IDなどを取得する関数群
@@ -290,13 +293,18 @@ export const DiffFetchButton: React.FC<{
             })
             .filter((x): x is Exclude<typeof x, undefined> => !!x)
 
-          const missingWorksAnnictQuery = await annict.queryWorks({
-            workIds: missingInOriginWorks.map(({ annict_id }) => annict_id),
-          })
+          const missingWorksAnnictQuery =
+            0 < missingInOriginWorks.length
+              ? await annict.queryWorks({
+                  workIds: missingInOriginWorks.map(
+                    ({ annict_id }) => annict_id
+                  ),
+                })
+              : null
 
           const additionalDiffs: StatusDiff[] = missingInOriginWorks
             .map((serviceWork) => {
-              const work = missingWorksAnnictQuery.searchWorks?.nodes?.find(
+              const work = missingWorksAnnictQuery?.searchWorks?.nodes?.find(
                 (work) => work?.annictId === serviceWork.annict_id
               )
               if (!work) {

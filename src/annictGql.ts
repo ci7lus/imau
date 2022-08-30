@@ -305,6 +305,39 @@ export enum EpisodeOrderField {
   SORT_NUMBER = "SORT_NUMBER",
 }
 
+export type LibraryEntry = Node & {
+  __typename?: "LibraryEntry"
+  id: Scalars["ID"]
+  nextEpisode: Maybe<Episode>
+  nextProgram: Maybe<Program>
+  note: Scalars["String"]
+  status: Maybe<Status>
+  user: User
+  work: Work
+}
+
+export type LibraryEntryConnection = {
+  __typename?: "LibraryEntryConnection"
+  edges: Maybe<Array<Maybe<LibraryEntryEdge>>>
+  nodes: Maybe<Array<Maybe<LibraryEntry>>>
+  pageInfo: PageInfo
+}
+
+export type LibraryEntryEdge = {
+  __typename?: "LibraryEntryEdge"
+  cursor: Scalars["String"]
+  node: Maybe<LibraryEntry>
+}
+
+export type LibraryEntryOrder = {
+  direction: OrderDirection
+  field: LibraryEntryOrderField
+}
+
+export enum LibraryEntryOrderField {
+  LAST_TRACKED_AT = "LAST_TRACKED_AT",
+}
+
 export enum Media {
   MOVIE = "MOVIE",
   OTHER = "OTHER",
@@ -871,6 +904,7 @@ export type User = Node & {
   followingActivities: Maybe<ActivityConnection>
   followingsCount: Scalars["Int"]
   id: Scalars["ID"]
+  libraryEntries: Maybe<LibraryEntryConnection>
   name: Scalars["String"]
   notificationsCount: Maybe<Scalars["Int"]>
   onHoldCount: Scalars["Int"]
@@ -916,6 +950,18 @@ export type UserfollowingActivitiesArgs = {
   first: InputMaybe<Scalars["Int"]>
   last: InputMaybe<Scalars["Int"]>
   orderBy: InputMaybe<ActivityOrder>
+}
+
+export type UserlibraryEntriesArgs = {
+  after: InputMaybe<Scalars["String"]>
+  before: InputMaybe<Scalars["String"]>
+  first: InputMaybe<Scalars["Int"]>
+  last: InputMaybe<Scalars["Int"]>
+  orderBy: InputMaybe<LibraryEntryOrder>
+  seasonFrom: InputMaybe<Scalars["String"]>
+  seasonUntil: InputMaybe<Scalars["String"]>
+  seasons: InputMaybe<Array<Scalars["String"]>>
+  states: InputMaybe<Array<StatusState>>
 }
 
 export type UserprogramsArgs = {
@@ -1087,7 +1133,7 @@ export enum WorkOrderField {
 }
 
 export type queryLibraryQueryVariables = Exact<{
-  state: StatusState
+  states: InputMaybe<Array<StatusState> | StatusState>
   after: InputMaybe<Scalars["String"]>
 }>
 
@@ -1095,24 +1141,28 @@ export type queryLibraryQuery = {
   __typename?: "Query"
   viewer: {
     __typename?: "User"
-    works: {
-      __typename?: "WorkConnection"
+    libraryEntries: {
+      __typename?: "LibraryEntryConnection"
       nodes: Array<{
-        __typename?: "Work"
-        id: string
-        annictId: number
-        malAnimeId: string | null
-        titleEn: string | null
-        titleRo: string | null
-        title: string
-        noEpisodes: boolean
-        episodes: {
-          __typename?: "EpisodeConnection"
-          nodes: Array<{
-            __typename?: "Episode"
-            viewerDidTrack: boolean
-          } | null> | null
-        } | null
+        __typename?: "LibraryEntry"
+        work: {
+          __typename?: "Work"
+          id: string
+          annictId: number
+          malAnimeId: string | null
+          titleEn: string | null
+          titleRo: string | null
+          title: string
+          noEpisodes: boolean
+          viewerStatusState: StatusState | null
+          episodes: {
+            __typename?: "EpisodeConnection"
+            nodes: Array<{
+              __typename?: "Episode"
+              viewerDidTrack: boolean
+            } | null> | null
+          } | null
+        }
       } | null> | null
       pageInfo: {
         __typename?: "PageInfo"
@@ -1166,21 +1216,24 @@ export type getMeQuery = {
 }
 
 export const queryLibraryDocument = gql`
-  query queryLibrary($state: StatusState!, $after: String) {
+  query queryLibrary($states: [StatusState!], $after: String) {
     viewer {
-      works(state: $state, after: $after) {
+      libraryEntries(states: $states, after: $after) {
         nodes {
-          id
-          annictId
-          malAnimeId
-          titleEn
-          titleRo
-          title
-          noEpisodes
-          episodes {
-            nodes {
-              viewerDidTrack
+          work {
+            id
+            annictId
+            malAnimeId
+            titleEn
+            titleRo
+            title
+            noEpisodes
+            episodes {
+              nodes {
+                viewerDidTrack
+              }
             }
+            viewerStatusState
           }
         }
         pageInfo {
@@ -1241,7 +1294,7 @@ export function getSdk(
 ) {
   return {
     queryLibrary(
-      variables: queryLibraryQueryVariables,
+      variables?: queryLibraryQueryVariables,
       requestHeaders?: Dom.RequestInit["headers"]
     ): Promise<queryLibraryQuery> {
       return withWrapper(
