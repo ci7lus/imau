@@ -133,7 +133,10 @@ export const CheckDiff = ({
           <Space h="md" />
           <Title order={3}>Untethered works</Title>
           <Space h="sm" />
-          <MissingWorkTable works={missingWorks} />
+          <MissingWorkTable
+            works={missingWorks}
+            targetService={targetService}
+          />
         </>
       )}
       <Space h="xl" />
