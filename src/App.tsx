@@ -1,4 +1,11 @@
-import { MantineProvider, Container, Text, Space, Anchor } from "@mantine/core"
+import {
+  MantineProvider,
+  Container,
+  Text,
+  Space,
+  Anchor,
+  Center,
+} from "@mantine/core"
 import { QueryClientProvider } from "react-query"
 import { Main } from "./components/Main"
 import { queryClient } from "./query"
@@ -17,14 +24,35 @@ export const App = () => {
         </Container>
         <Space h="md" />
         <Container>
-          <Text size="sm">imau made with ❤️.</Text>
-          <Anchor
-            size="sm"
-            href="https://github.com/ci7lus/imau"
-            target="_blank"
-          >
-            Source code
-          </Anchor>
+          <Center>
+            <Text size="sm">
+              imau made with ❤️ by{" "}
+              <Anchor
+                size="sm"
+                href="https://myanimelist.net/profile/kanoshiho"
+                target="_blank"
+              >
+                @kanoshiho@myanimelist.net
+              </Anchor>{" "}
+              (
+              <Anchor
+                size="sm"
+                href="https://anilist.co/user/neneka/"
+                target="_blank"
+              >
+                @neneka@anilist.co
+              </Anchor>
+              ).
+            </Text>
+            <Anchor
+              ml="xs"
+              size="sm"
+              href="https://github.com/ci7lus/imau"
+              target="_blank"
+            >
+              Source code
+            </Anchor>
+          </Center>
           <Space h="md" />
         </Container>
       </MantineProvider>
