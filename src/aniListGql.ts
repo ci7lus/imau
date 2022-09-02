@@ -4548,6 +4548,7 @@ export type QueryLibraryQueryVariables = Exact<{
   sort: Array<MediaListSort> | MediaListSort
   perChunk: Scalars["Int"]
   chunk: Scalars["Int"]
+  status: MediaListStatus
 }>
 
 export type QueryLibraryQuery = {
@@ -4659,6 +4660,7 @@ export const QueryLibraryDocument = gql`
     $sort: [MediaListSort!]!
     $perChunk: Int!
     $chunk: Int!
+    $status: MediaListStatus!
   ) {
     MediaListCollection(
       userId: $userId
@@ -4666,6 +4668,8 @@ export const QueryLibraryDocument = gql`
       perChunk: $perChunk
       chunk: $chunk
       type: ANIME
+      forceSingleCompletedList: true
+      status: $status
     ) {
       lists {
         entries {
