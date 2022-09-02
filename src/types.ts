@@ -24,7 +24,7 @@ export type StatusDiff = {
 
 export type ServiceStatus = {
   id: string
-  relationId: string | null
+  recordId: string | null
   title: string
   status: keyof typeof StatusState
   watchedEpisodeCount: number

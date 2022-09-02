@@ -70,7 +70,7 @@ export const DiffFetchButton: React.FC<{
               serviceStatuses.push(
                 ...result.data.data.map((d) => ({
                   id: d.node.id.toString(),
-                  relationId: null,
+                  recordId: null,
                   title: d.node.title,
                   status: MAL_TO_ANNICT_STATUS_MAP[d.list_status.status],
                   watchedEpisodeCount: d.list_status.num_episodes_watched,
@@ -139,8 +139,8 @@ export const DiffFetchButton: React.FC<{
                         }
 
                         return {
-                          id: m.id.toString(),
-                          relationId: m.media.id.toString(),
+                          id: m.media.id.toString(),
+                          recordId: m.id.toString(),
                           title:
                             m.media.title.english ??
                             m.media.title.romaji ??
@@ -263,8 +263,7 @@ export const DiffFetchButton: React.FC<{
                 return false
               }
               const status = serviceStatuses.find(
-                (status) =>
-                  status?.relationId === workId || status.id === workId
+                (status) => status.id === workId
               )
               if (
                 !status ||
@@ -279,7 +278,7 @@ export const DiffFetchButton: React.FC<{
                         status: status.status,
                         watchedEpisodeCount: status.watchedEpisodeCount,
                         title: status.title,
-                        id: status.id,
+                        id: status.recordId ?? status.id,
                       }
                     : undefined,
                 }
@@ -292,17 +291,11 @@ export const DiffFetchButton: React.FC<{
           const missingInOriginWorks = serviceStatuses
             .filter(
               (serviceWork) =>
-                !works.find(
-                  (work) =>
-                    serviceWork.id === getTargetWorkId(work) ||
-                    serviceWork.relationId === getTargetWorkId(work)
-                )
+                !works.find((work) => serviceWork.id === getTargetWorkId(work))
             )
             .map((serviceWork) => {
               const armRelation = arm.find(
-                (entry) =>
-                  serviceWork.id === getTargetArmId(entry) ||
-                  serviceWork.relationId === getTargetArmId(entry)
+                (entry) => serviceWork.id === getTargetArmId(entry)
               )
               if (!armRelation || !armRelation.annict_id) {
                 return
@@ -350,7 +343,7 @@ export const DiffFetchButton: React.FC<{
                   status: serviceWork.status,
                   watchedEpisodeCount: serviceWork.watchedEpisodeCount,
                   title: serviceWork.title,
-                  id: serviceWork.id,
+                  id: serviceWork.recordId ?? serviceWork.id,
                 },
               }
               return diff
