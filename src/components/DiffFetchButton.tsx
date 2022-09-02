@@ -277,11 +277,17 @@ export const DiffFetchButton: React.FC<{
           const missingInOriginWorks = serviceStatuses
             .filter(
               (serviceWork) =>
-                !works.find((work) => serviceWork.id === getTargetWorkId(work))
+                !works.find(
+                  (work) =>
+                    serviceWork.id === getTargetWorkId(work) ||
+                    serviceWork.relationId === getTargetWorkId(work)
+                )
             )
             .map((serviceWork) => {
               const armRelation = arm.find(
-                (entry) => serviceWork.id === getTargetArmId(entry)
+                (entry) =>
+                  serviceWork.id === getTargetArmId(entry) ||
+                  serviceWork.relationId === getTargetArmId(entry)
               )
               if (!armRelation || !armRelation.annict_id) {
                 return
