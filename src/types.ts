@@ -21,3 +21,11 @@ export type StatusDiff = {
     id: string
   }
 }
+
+export type ServiceStatus = {
+  id: string
+  recordId: string | null
+  title: string
+  status: keyof typeof StatusState
+  watchedEpisodeCount: number
+}

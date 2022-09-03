@@ -1,5 +1,5 @@
-query queryLibrary($userId: Int!, $sort: [MediaListSort!]!, $perChunk: Int!, $chunk: Int!) {
-  MediaListCollection(userId: $userId, sort: $sort, perChunk: $perChunk, chunk: $chunk, type: ANIME) {
+query queryLibrary($userId: Int!, $sort: [MediaListSort!]!, $perChunk: Int!, $chunk: Int!, $status: MediaListStatus!) {
+  MediaListCollection(userId: $userId, sort: $sort, perChunk: $perChunk, chunk: $chunk, type: ANIME, forceSingleCompletedList: true, status: $status) {
     lists {
       entries {
         id
