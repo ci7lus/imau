@@ -54,7 +54,9 @@ export const DiffFetchButton: React.FC<{
 
           const armReq = axios.get<
             { mal_id?: number; annict_id?: number; anilist_id?: number }[]
-          >("https://cdn.jsdelivr.net/gh/kawaiioverflow/arm@master/arm.json")
+          >(
+            "https://cdn.jsdelivr.net/gh/SlashNephy/arm-supplementary@master/dist/arm.json"
+          )
 
           if (targetService === TARGET_SERVICE_MAL) {
             let offset = 0
