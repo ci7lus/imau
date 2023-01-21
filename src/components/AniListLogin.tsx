@@ -1,7 +1,7 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import { generateRandomString } from "../utils"
 import { AniListUserInfo } from "./AniListUserInfo"
+import { generateRandomString } from "../utils"
 
 export const AniListLogin = ({
   aniListAccessToken,

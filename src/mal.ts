@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios"
+import axios, { Axios } from "axios"
 import { StatusState } from "./annictGql"
 
 export type MALAnimeStatus =
@@ -45,7 +45,7 @@ export type MALListStatus = {
 }
 
 export class MALAPI {
-  public client: AxiosInstance
+  public client: Axios
   constructor(public accessToken: string) {
     this.client = axios.create({
       headers: { Authorization: `Bearer ${accessToken}` },

@@ -9,13 +9,13 @@ import {
 import { useLocalStorage } from "@mantine/hooks"
 import { useMemo, useState } from "react"
 import { Eraser } from "tabler-icons-react"
-import { StatusState } from "../annictGql"
-import { TargetService, TARGET_SERVICE_MAL } from "../constants"
-import { AnimeWork, StatusDiff } from "../types"
 import { DiffFetchButton } from "./DiffFetchButton"
 import { DiffTable } from "./DiffTable"
 import { DoSync } from "./DoSync"
 import { MissingWorkTable } from "./MissingWorkTable"
+import { StatusState } from "../annictGql"
+import { TargetService, TARGET_SERVICE_MAL } from "../constants"
+import { AnimeWork, StatusDiff } from "../types"
 
 export const CheckDiff = ({
   annictAccessToken,
