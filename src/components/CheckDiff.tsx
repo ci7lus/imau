@@ -34,6 +34,7 @@ export const CheckDiff = ({
     key: `ignoreList${
       targetService !== TARGET_SERVICE_MAL ? targetService : ""
     }`,
+    defaultValue: [],
     serialize: (list) => JSON.stringify(list),
     deserialize: (str) => {
       try {
