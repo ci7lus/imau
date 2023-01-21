@@ -5,7 +5,7 @@ import {
   Space,
   Text,
 } from "@mantine/core"
-import { useLocalStorageValue } from "@mantine/hooks"
+import { useLocalStorage } from "@mantine/hooks"
 import { useState } from "react"
 import {
   TARGET_SERVICE_ANILIST,
@@ -20,23 +20,22 @@ import { FirstView } from "./FirstView"
 import { MALLogin } from "./MALLogin"
 
 export const Main = () => {
-  const [annictToken, setAnnictToken] = useLocalStorageValue<string>({
+  const [annictToken, setAnnictToken] = useLocalStorage<string>({
     key: "ANNICT_ACCESS_TOKEN",
     defaultValue: "",
   })
-  const [malAccessToken, setMalAccessToken] = useLocalStorageValue<string>({
+  const [malAccessToken, setMalAccessToken] = useLocalStorage<string>({
     key: "MAL_ACCESS_TOKEN",
     defaultValue: "",
   })
-  const [aniListAccessToken, setAniListAccessToken] =
-    useLocalStorageValue<string>({
-      key: "ANILIST_ACCESS_TOKEN",
-      defaultValue: "",
-    })
+  const [aniListAccessToken, setAniListAccessToken] = useLocalStorage<string>({
+    key: "ANILIST_ACCESS_TOKEN",
+    defaultValue: "",
+  })
   const [annictConnected, setAnnictConnected] = useState(false)
   const [malConnected, setMalConnected] = useState(false)
   const [aniListConnected, setAniListConnected] = useState(false)
-  const [target, setTarget] = useLocalStorageValue<TargetService>({
+  const [target, setTarget] = useLocalStorage<TargetService>({
     key: "TARGET_SERVICE",
     defaultValue: TARGET_SERVICE_MAL,
   })

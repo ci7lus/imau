@@ -2,7 +2,7 @@
 
 Sync your viewing status from Annict to MAL/AniList.<br />
 
-[![Image from Gyazo](https://i.gyazo.com/677b6dea14808fc7792c414be3e3df77.png)](https://gyazo.com/677b6dea14808fc7792c414be3e3df77)
+[![Image from Gyazo](https://i.gyazo.com/2c86edeea8e8245b3b317f9462bbfbca.png)](https://gyazo.com/2c86edeea8e8245b3b317f9462bbfbca)
 
 ## dev
 
