@@ -1,6 +1,6 @@
 # imau
 
-Sync your viewing status from Annict to MAL/AniList to play AMQ (AnimeMusicQuiz).<br />
+Sync your viewing status from Annict to MAL/AniList.<br />
 
 [![Image from Gyazo](https://i.gyazo.com/677b6dea14808fc7792c414be3e3df77.png)](https://gyazo.com/677b6dea14808fc7792c414be3e3df77)
 

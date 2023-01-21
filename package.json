@@ -1,7 +1,7 @@
 {
   "name": "imau",
   "version": "1.0.0",
-  "description": "Sync your viewing status from Annict to MAL/AniList to play AMQ (AnimeMusicQuiz).",
+  "description": "Sync your viewing status from Annict to MAL/AniList.",
   "author": "ci7lus <7887955+ci7lus@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
