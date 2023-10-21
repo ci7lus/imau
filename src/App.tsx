@@ -6,18 +6,21 @@ import {
   Anchor,
   Center,
 } from "@mantine/core"
+import { Notifications } from "@mantine/notifications"
+import React from "react"
 import { QueryClientProvider } from "react-query"
 import { Main } from "./components/Main"
 import { queryClient } from "./query"
+// eslint-disable-next-line import/no-unresolved
+import "@mantine/core/styles.css"
+// eslint-disable-next-line import/no-unresolved
+import "@mantine/notifications/styles.css"
 
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{ colorScheme: "dark" }}
-      >
+      <MantineProvider forceColorScheme="dark">
+        <Notifications />
         <Container>
           <Space h="xl" />
           <Main />

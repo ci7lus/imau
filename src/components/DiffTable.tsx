@@ -1,5 +1,6 @@
 import { ActionIcon, Anchor, Checkbox, Table, Text } from "@mantine/core"
 import { useCallback, useMemo } from "react"
+import React from "react"
 import { Forbid } from "tabler-icons-react"
 import {
   TARGET_SERVICE_NAMES,
@@ -28,7 +29,7 @@ export const DiffTable = ({
 }) => {
   const sortedMemo = useMemo(
     () => diffs.sort((_, b) => (ignores.includes(b.work.annictId) ? -1 : 0)),
-    [diffs]
+    [diffs, ignores]
   )
   const getRelationId = useCallback(
     (work: AnimeWork) => {

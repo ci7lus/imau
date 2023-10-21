@@ -1,12 +1,13 @@
 import {
   ActionIcon,
   Checkbox,
-  Grid,
+  Flex,
   ScrollArea,
   Space,
   Title,
 } from "@mantine/core"
 import { useLocalStorage } from "@mantine/hooks"
+import React, { useCallback } from "react"
 import { useMemo, useState } from "react"
 import { Eraser } from "tabler-icons-react"
 import { DiffFetchButton } from "./DiffFetchButton"
@@ -37,6 +38,9 @@ export const CheckDiff = ({
     defaultValue: [],
     serialize: (list) => JSON.stringify(list),
     deserialize: (str) => {
+      if (!str) {
+        return []
+      }
       try {
         return JSON.parse(str)
       } catch {
@@ -45,10 +49,41 @@ export const CheckDiff = ({
     },
   })
 
+  const isAllChecked = useMemo(
+    () =>
+      diffs.filter((diff) => !ignores?.includes(diff.work.annictId)).length <=
+      checks.size,
+    [checks.size, diffs, ignores]
+  )
+  const handleCheckAll = useCallback(() => {
+    const isEveryChecked = idMap
+      .filter((id) => !ignores?.includes(id))
+      .every((id) => checks.has(id))
+    setChecks(
+      isEveryChecked
+        ? new Set()
+        : new Set(idMap.filter((id) => !ignores?.includes(id)))
+    )
+  }, [checks, idMap, ignores])
+  const handleReset = useCallback(() => {
+    setIgnores((ignores) => {
+      setChecks((checks) => {
+        const copiedChecks = new Set(checks)
+        ignores.forEach((id) => {
+          if (!copiedChecks.has(id)) {
+            copiedChecks.add(id)
+          }
+        })
+        return copiedChecks
+      })
+      return []
+    })
+  }, [setIgnores])
+
   return (
     <>
       <Space h="md" />
-      <Grid justify="center" align="center">
+      <Flex justify="center" align="center">
         <DiffFetchButton
           annictAccessToken={annictAccessToken}
           targetService={targetService}
@@ -63,57 +98,28 @@ export const CheckDiff = ({
           setDiffs={setDiffs}
           setChecks={setChecks}
           setMissingWorks={setMissingWorks}
-          ignores={ignores}
+          ignores={ignores as number[]}
         />
-      </Grid>
+      </Flex>
       <Space h="xl" />
-      <Grid justify="space-between" px="md">
+      <Flex justify="space-between" align="center" px="md">
         <Checkbox
           label="Check all"
-          checked={
-            diffs.filter((diff) => !ignores.includes(diff.work.annictId))
-              .length <= checks.size
-          }
-          onClick={() => {
-            const isEveryChecked = idMap
-              .filter((id) => !ignores.includes(id))
-              .every((id) => checks.has(id))
-            setChecks(
-              isEveryChecked
-                ? new Set()
-                : new Set(idMap.filter((id) => !ignores.includes(id)))
-            )
-          }}
+          checked={isAllChecked}
+          onClick={handleCheckAll}
           readOnly={true}
         ></Checkbox>
-        <ActionIcon
-          title="Reset ignores"
-          onClick={() => {
-            setIgnores((ignores) => {
-              setChecks((checks) => {
-                const copiedChecks = new Set(checks)
-                ignores.forEach((id) => {
-                  if (!copiedChecks.has(id)) {
-                    copiedChecks.add(id)
-                  }
-                })
-                return copiedChecks
-              })
-              return []
-            })
-          }}
-          size="lg"
-        >
+        <ActionIcon title="Reset ignores" onClick={handleReset} size="lg">
           <Eraser />
         </ActionIcon>
-      </Grid>
+      </Flex>
       <Space h="sm" />
       <ScrollArea>
         <DiffTable
           diffs={diffs}
           checks={checks}
           setChecks={setChecks}
-          ignores={ignores}
+          ignores={ignores as number[]}
           setIgnores={setIgnores}
           targetService={targetService}
         />

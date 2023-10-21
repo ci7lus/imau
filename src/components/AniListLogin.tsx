@@ -1,5 +1,6 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
+import React from "react"
 import { AniListUserInfo } from "./AniListUserInfo"
 import { generateRandomString } from "../utils"
 

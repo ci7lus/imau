@@ -6,6 +6,7 @@ import {
   Text,
 } from "@mantine/core"
 import { useLocalStorage } from "@mantine/hooks"
+import React from "react"
 import { useState } from "react"
 import { AniListLogin } from "./AniListLogin"
 import { AnnictLogin } from "./AnnictLogin"
@@ -66,20 +67,20 @@ export const Main = () => {
       <Space h="md" />
       <SimpleGrid spacing="md" cols={2}>
         <AnnictLogin
-          annictToken={annictToken}
+          annictToken={annictToken as string}
           setAnnictToken={setAnnictToken}
           setAnnictConnected={setAnnictConnected}
         />
         {target === TARGET_SERVICE_MAL && (
           <MALLogin
-            malAccessToken={malAccessToken}
+            malAccessToken={malAccessToken as string}
             setMalAccessToken={setMalAccessToken}
             setMalConnected={setMalConnected}
           />
         )}
         {target === TARGET_SERVICE_ANILIST && (
           <AniListLogin
-            aniListAccessToken={aniListAccessToken}
+            aniListAccessToken={aniListAccessToken as string}
             setAniListAccessToken={setAniListAccessToken}
             setAniListConnected={setAniListConnected}
           />
@@ -88,9 +89,9 @@ export const Main = () => {
       <Space h="lg" />
       {annictConnected && targetConnected ? (
         <CheckDiff
-          annictAccessToken={annictToken}
-          targetService={target}
-          targetAccessToken={targetAccessToken}
+          annictAccessToken={annictToken as string}
+          targetService={target as TargetService}
+          targetAccessToken={targetAccessToken as string}
         />
       ) : (
         <Center m="lg">

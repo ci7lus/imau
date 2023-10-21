@@ -1,6 +1,8 @@
 ---
 extends:
   - "@ci7lus/eslint-config"
+  - "plugin:react/recommended"
+  - "plugin:eslint-plugin-react-hooks/recommended"
 parserOptions:
   project:
     - "./tsconfig.eslint.json"

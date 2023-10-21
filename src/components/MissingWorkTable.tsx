@@ -1,4 +1,5 @@
 import { Anchor, List, Table, Text } from "@mantine/core"
+import React from "react"
 import { useCallback } from "react"
 import {
   TargetService,

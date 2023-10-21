@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { GraphQLClient } from "graphql-request"
-import * as Dom from "graphql-request/dist/types.dom"
+import { GraphQLClientRequestHeaders } from "graphql-request/build/cjs/types"
 import gql from "graphql-tag"
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
@@ -13,20 +13,29 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>
 }
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never }
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never
+    }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string
-  String: string
-  Boolean: boolean
-  Int: number
-  Float: number
-  DateTime: any
+  ID: { input: string; output: string }
+  String: { input: string; output: string }
+  Boolean: { input: boolean; output: boolean }
+  Int: { input: number; output: number }
+  Float: { input: number; output: number }
+  DateTime: { input: any; output: any }
 }
 
 export type Activity = Node & {
   __typename?: "Activity"
-  annictId: Scalars["Int"]
-  id: Scalars["ID"]
+  annictId: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
   user: User
 }
 
@@ -44,8 +53,10 @@ export type ActivityConnection = {
 export type ActivityEdge = {
   __typename?: "ActivityEdge"
   action: ActivityAction
-  annictId: Scalars["Int"]
-  cursor: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  cursor: Scalars["String"]["output"]
+  item: Maybe<ActivityItem>
+  /** @deprecated Use `item` instead. */
   node: Maybe<ActivityItem>
   user: User
 }
@@ -63,13 +74,13 @@ export enum ActivityOrderField {
 
 export type Cast = Node & {
   __typename?: "Cast"
-  annictId: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
   character: Character
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
   person: Person
-  sortNumber: Scalars["Int"]
+  sortNumber: Scalars["Int"]["output"]
   work: Work
 }
 
@@ -82,7 +93,7 @@ export type CastConnection = {
 
 export type CastEdge = {
   __typename?: "CastEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Cast>
 }
 
@@ -98,20 +109,20 @@ export enum CastOrderField {
 
 export type Channel = Node & {
   __typename?: "Channel"
-  annictId: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
   channelGroup: ChannelGroup
-  id: Scalars["ID"]
-  name: Scalars["String"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
   programs: Maybe<ProgramConnection>
-  published: Scalars["Boolean"]
-  scChid: Scalars["Int"]
+  published: Scalars["Boolean"]["output"]
+  scChid: Scalars["Int"]["output"]
 }
 
 export type ChannelprogramsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type ChannelConnection = {
@@ -123,55 +134,55 @@ export type ChannelConnection = {
 
 export type ChannelEdge = {
   __typename?: "ChannelEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Channel>
 }
 
 export type ChannelGroup = Node & {
   __typename?: "ChannelGroup"
-  annictId: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
   channels: Maybe<ChannelConnection>
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  sortNumber: Scalars["Int"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  sortNumber: Scalars["Int"]["output"]
 }
 
 export type ChannelGroupchannelsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type Character = Node & {
   __typename?: "Character"
-  age: Scalars["String"]
-  ageEn: Scalars["String"]
-  annictId: Scalars["Int"]
-  birthday: Scalars["String"]
-  birthdayEn: Scalars["String"]
-  bloodType: Scalars["String"]
-  bloodTypeEn: Scalars["String"]
-  description: Scalars["String"]
-  descriptionEn: Scalars["String"]
-  descriptionSource: Scalars["String"]
-  descriptionSourceEn: Scalars["String"]
-  favoriteCharactersCount: Scalars["Int"]
-  height: Scalars["String"]
-  heightEn: Scalars["String"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
-  nameKana: Scalars["String"]
-  nationality: Scalars["String"]
-  nationalityEn: Scalars["String"]
-  nickname: Scalars["String"]
-  nicknameEn: Scalars["String"]
-  occupation: Scalars["String"]
-  occupationEn: Scalars["String"]
+  age: Scalars["String"]["output"]
+  ageEn: Scalars["String"]["output"]
+  annictId: Scalars["Int"]["output"]
+  birthday: Scalars["String"]["output"]
+  birthdayEn: Scalars["String"]["output"]
+  bloodType: Scalars["String"]["output"]
+  bloodTypeEn: Scalars["String"]["output"]
+  description: Scalars["String"]["output"]
+  descriptionEn: Scalars["String"]["output"]
+  descriptionSource: Scalars["String"]["output"]
+  descriptionSourceEn: Scalars["String"]["output"]
+  favoriteCharactersCount: Scalars["Int"]["output"]
+  height: Scalars["String"]["output"]
+  heightEn: Scalars["String"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
+  nameKana: Scalars["String"]["output"]
+  nationality: Scalars["String"]["output"]
+  nationalityEn: Scalars["String"]["output"]
+  nickname: Scalars["String"]["output"]
+  nicknameEn: Scalars["String"]["output"]
+  occupation: Scalars["String"]["output"]
+  occupationEn: Scalars["String"]["output"]
   series: Series
-  weight: Scalars["String"]
-  weightEn: Scalars["String"]
+  weight: Scalars["String"]["output"]
+  weightEn: Scalars["String"]["output"]
 }
 
 export type CharacterConnection = {
@@ -183,7 +194,7 @@ export type CharacterConnection = {
 
 export type CharacterEdge = {
   __typename?: "CharacterEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Character>
 }
 
@@ -198,87 +209,87 @@ export enum CharacterOrderField {
 }
 
 export type CreateRecordInput = {
-  clientMutationId: InputMaybe<Scalars["String"]>
-  comment: InputMaybe<Scalars["String"]>
-  episodeId: Scalars["ID"]
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
+  comment: InputMaybe<Scalars["String"]["input"]>
+  episodeId: Scalars["ID"]["input"]
   ratingState: InputMaybe<RatingState>
-  shareFacebook: InputMaybe<Scalars["Boolean"]>
-  shareTwitter: InputMaybe<Scalars["Boolean"]>
+  shareFacebook: InputMaybe<Scalars["Boolean"]["input"]>
+  shareTwitter: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type CreateRecordPayload = {
   __typename?: "CreateRecordPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   record: Maybe<WatchRecord>
 }
 
 export type CreateReviewInput = {
-  body: Scalars["String"]
-  clientMutationId: InputMaybe<Scalars["String"]>
+  body: Scalars["String"]["input"]
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
   ratingAnimationState: InputMaybe<RatingState>
   ratingCharacterState: InputMaybe<RatingState>
   ratingMusicState: InputMaybe<RatingState>
   ratingOverallState: InputMaybe<RatingState>
   ratingStoryState: InputMaybe<RatingState>
-  shareFacebook: InputMaybe<Scalars["Boolean"]>
-  shareTwitter: InputMaybe<Scalars["Boolean"]>
-  title: InputMaybe<Scalars["String"]>
-  workId: Scalars["ID"]
+  shareFacebook: InputMaybe<Scalars["Boolean"]["input"]>
+  shareTwitter: InputMaybe<Scalars["Boolean"]["input"]>
+  title: InputMaybe<Scalars["String"]["input"]>
+  workId: Scalars["ID"]["input"]
 }
 
 export type CreateReviewPayload = {
   __typename?: "CreateReviewPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   review: Maybe<Review>
 }
 
 export type DeleteRecordInput = {
-  clientMutationId: InputMaybe<Scalars["String"]>
-  recordId: Scalars["ID"]
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
+  recordId: Scalars["ID"]["input"]
 }
 
 export type DeleteRecordPayload = {
   __typename?: "DeleteRecordPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   episode: Maybe<Episode>
 }
 
 export type DeleteReviewInput = {
-  clientMutationId: InputMaybe<Scalars["String"]>
-  reviewId: Scalars["ID"]
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
+  reviewId: Scalars["ID"]["input"]
 }
 
 export type DeleteReviewPayload = {
   __typename?: "DeleteReviewPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   work: Maybe<Work>
 }
 
 export type Episode = Node & {
   __typename?: "Episode"
-  annictId: Scalars["Int"]
-  id: Scalars["ID"]
+  annictId: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
   nextEpisode: Maybe<Episode>
-  number: Maybe<Scalars["Int"]>
-  numberText: Maybe<Scalars["String"]>
+  number: Maybe<Scalars["Int"]["output"]>
+  numberText: Maybe<Scalars["String"]["output"]>
   prevEpisode: Maybe<Episode>
-  recordCommentsCount: Scalars["Int"]
+  recordCommentsCount: Scalars["Int"]["output"]
   records: Maybe<RecordConnection>
-  recordsCount: Scalars["Int"]
-  satisfactionRate: Maybe<Scalars["Float"]>
-  sortNumber: Scalars["Int"]
-  title: Maybe<Scalars["String"]>
-  viewerDidTrack: Scalars["Boolean"]
-  viewerRecordsCount: Scalars["Int"]
+  recordsCount: Scalars["Int"]["output"]
+  satisfactionRate: Maybe<Scalars["Float"]["output"]>
+  sortNumber: Scalars["Int"]["output"]
+  title: Maybe<Scalars["String"]["output"]>
+  viewerDidTrack: Scalars["Boolean"]["output"]
+  viewerRecordsCount: Scalars["Int"]["output"]
   work: Work
 }
 
 export type EpisoderecordsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  hasComment: InputMaybe<Scalars["Boolean"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  hasComment: InputMaybe<Scalars["Boolean"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<RecordOrder>
 }
 
@@ -291,7 +302,7 @@ export type EpisodeConnection = {
 
 export type EpisodeEdge = {
   __typename?: "EpisodeEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Episode>
 }
 
@@ -307,10 +318,10 @@ export enum EpisodeOrderField {
 
 export type LibraryEntry = Node & {
   __typename?: "LibraryEntry"
-  id: Scalars["ID"]
+  id: Scalars["ID"]["output"]
   nextEpisode: Maybe<Episode>
   nextProgram: Maybe<Program>
-  note: Scalars["String"]
+  note: Scalars["String"]["output"]
   status: Maybe<Status>
   user: User
   work: Work
@@ -325,7 +336,7 @@ export type LibraryEntryConnection = {
 
 export type LibraryEntryEdge = {
   __typename?: "LibraryEntryEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<LibraryEntry>
 }
 
@@ -348,19 +359,19 @@ export enum Media {
 
 export type MultipleRecord = Node & {
   __typename?: "MultipleRecord"
-  annictId: Scalars["Int"]
-  createdAt: Scalars["DateTime"]
-  id: Scalars["ID"]
+  annictId: Scalars["Int"]["output"]
+  createdAt: Scalars["DateTime"]["output"]
+  id: Scalars["ID"]["output"]
   records: Maybe<RecordConnection>
   user: User
   work: Work
 }
 
 export type MultipleRecordrecordsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type Mutation = {
@@ -403,7 +414,7 @@ export type MutationupdateStatusArgs = {
 }
 
 export type Node = {
-  id: Scalars["ID"]
+  id: Scalars["ID"]["output"]
 }
 
 export enum OrderDirection {
@@ -413,19 +424,19 @@ export enum OrderDirection {
 
 export type Organization = Node & {
   __typename?: "Organization"
-  annictId: Scalars["Int"]
-  favoriteOrganizationsCount: Scalars["Int"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
-  nameKana: Scalars["String"]
-  staffsCount: Scalars["Int"]
-  twitterUsername: Scalars["String"]
-  twitterUsernameEn: Scalars["String"]
-  url: Scalars["String"]
-  urlEn: Scalars["String"]
-  wikipediaUrl: Scalars["String"]
-  wikipediaUrlEn: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  favoriteOrganizationsCount: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
+  nameKana: Scalars["String"]["output"]
+  staffsCount: Scalars["Int"]["output"]
+  twitterUsername: Scalars["String"]["output"]
+  twitterUsernameEn: Scalars["String"]["output"]
+  url: Scalars["String"]["output"]
+  urlEn: Scalars["String"]["output"]
+  wikipediaUrl: Scalars["String"]["output"]
+  wikipediaUrlEn: Scalars["String"]["output"]
 }
 
 export type OrganizationConnection = {
@@ -437,7 +448,7 @@ export type OrganizationConnection = {
 
 export type OrganizationEdge = {
   __typename?: "OrganizationEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Organization>
 }
 
@@ -453,35 +464,35 @@ export enum OrganizationOrderField {
 
 export type PageInfo = {
   __typename?: "PageInfo"
-  endCursor: Maybe<Scalars["String"]>
-  hasNextPage: Scalars["Boolean"]
-  hasPreviousPage: Scalars["Boolean"]
-  startCursor: Maybe<Scalars["String"]>
+  endCursor: Maybe<Scalars["String"]["output"]>
+  hasNextPage: Scalars["Boolean"]["output"]
+  hasPreviousPage: Scalars["Boolean"]["output"]
+  startCursor: Maybe<Scalars["String"]["output"]>
 }
 
 export type Person = Node & {
   __typename?: "Person"
-  annictId: Scalars["Int"]
-  birthday: Scalars["String"]
-  bloodType: Scalars["String"]
-  castsCount: Scalars["Int"]
-  favoritePeopleCount: Scalars["Int"]
-  genderText: Scalars["String"]
-  height: Scalars["String"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
-  nameKana: Scalars["String"]
-  nickname: Scalars["String"]
-  nicknameEn: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  birthday: Scalars["String"]["output"]
+  bloodType: Scalars["String"]["output"]
+  castsCount: Scalars["Int"]["output"]
+  favoritePeopleCount: Scalars["Int"]["output"]
+  genderText: Scalars["String"]["output"]
+  height: Scalars["String"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
+  nameKana: Scalars["String"]["output"]
+  nickname: Scalars["String"]["output"]
+  nicknameEn: Scalars["String"]["output"]
   prefecture: Prefecture
-  staffsCount: Scalars["Int"]
-  twitterUsername: Scalars["String"]
-  twitterUsernameEn: Scalars["String"]
-  url: Scalars["String"]
-  urlEn: Scalars["String"]
-  wikipediaUrl: Scalars["String"]
-  wikipediaUrlEn: Scalars["String"]
+  staffsCount: Scalars["Int"]["output"]
+  twitterUsername: Scalars["String"]["output"]
+  twitterUsernameEn: Scalars["String"]["output"]
+  url: Scalars["String"]["output"]
+  urlEn: Scalars["String"]["output"]
+  wikipediaUrl: Scalars["String"]["output"]
+  wikipediaUrlEn: Scalars["String"]["output"]
 }
 
 export type PersonConnection = {
@@ -493,7 +504,7 @@ export type PersonConnection = {
 
 export type PersonEdge = {
   __typename?: "PersonEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Person>
 }
 
@@ -509,20 +520,20 @@ export enum PersonOrderField {
 
 export type Prefecture = Node & {
   __typename?: "Prefecture"
-  annictId: Scalars["Int"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
 }
 
 export type Program = Node & {
   __typename?: "Program"
-  annictId: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
   channel: Channel
   episode: Episode
-  id: Scalars["ID"]
-  rebroadcast: Scalars["Boolean"]
-  scPid: Maybe<Scalars["Int"]>
-  startedAt: Scalars["DateTime"]
+  id: Scalars["ID"]["output"]
+  rebroadcast: Scalars["Boolean"]["output"]
+  scPid: Maybe<Scalars["Int"]["output"]>
+  startedAt: Scalars["DateTime"]["output"]
   state: ProgramState
   work: Work
 }
@@ -536,7 +547,7 @@ export type ProgramConnection = {
 
 export type ProgramEdge = {
   __typename?: "ProgramEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Program>
 }
 
@@ -568,65 +579,65 @@ export type Query = {
 }
 
 export type QuerynodeArgs = {
-  id: Scalars["ID"]
+  id: Scalars["ID"]["input"]
 }
 
 export type QuerynodesArgs = {
-  ids: Array<Scalars["ID"]>
+  ids: Array<Scalars["ID"]["input"]>
 }
 
 export type QuerysearchCharactersArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
-  names: InputMaybe<Array<Scalars["String"]>>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
+  names: InputMaybe<Array<Scalars["String"]["input"]>>
   orderBy: InputMaybe<CharacterOrder>
 }
 
 export type QuerysearchEpisodesArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<EpisodeOrder>
 }
 
 export type QuerysearchOrganizationsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
-  names: InputMaybe<Array<Scalars["String"]>>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
+  names: InputMaybe<Array<Scalars["String"]["input"]>>
   orderBy: InputMaybe<OrganizationOrder>
 }
 
 export type QuerysearchPeopleArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
-  names: InputMaybe<Array<Scalars["String"]>>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
+  names: InputMaybe<Array<Scalars["String"]["input"]>>
   orderBy: InputMaybe<PersonOrder>
 }
 
 export type QuerysearchWorksArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<WorkOrder>
-  seasons: InputMaybe<Array<Scalars["String"]>>
-  titles: InputMaybe<Array<Scalars["String"]>>
+  seasons: InputMaybe<Array<Scalars["String"]["input"]>>
+  titles: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type QueryuserArgs = {
-  username: Scalars["String"]
+  username: Scalars["String"]["input"]
 }
 
 export enum RatingState {
@@ -638,19 +649,19 @@ export enum RatingState {
 
 export type WatchRecord = Node & {
   __typename?: "Record"
-  annictId: Scalars["Int"]
-  comment: Maybe<Scalars["String"]>
-  commentsCount: Scalars["Int"]
-  createdAt: Scalars["DateTime"]
+  annictId: Scalars["Int"]["output"]
+  comment: Maybe<Scalars["String"]["output"]>
+  commentsCount: Scalars["Int"]["output"]
+  createdAt: Scalars["DateTime"]["output"]
   episode: Episode
-  facebookClickCount: Scalars["Int"]
-  id: Scalars["ID"]
-  likesCount: Scalars["Int"]
-  modified: Scalars["Boolean"]
-  rating: Maybe<Scalars["Float"]>
+  facebookClickCount: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
+  likesCount: Scalars["Int"]["output"]
+  modified: Scalars["Boolean"]["output"]
+  rating: Maybe<Scalars["Float"]["output"]>
   ratingState: Maybe<RatingState>
-  twitterClickCount: Scalars["Int"]
-  updatedAt: Scalars["DateTime"]
+  twitterClickCount: Scalars["Int"]["output"]
+  updatedAt: Scalars["DateTime"]["output"]
   user: User
   work: Work
 }
@@ -664,7 +675,7 @@ export type RecordConnection = {
 
 export type RecordEdge = {
   __typename?: "RecordEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<WatchRecord>
 }
 
@@ -680,20 +691,20 @@ export enum RecordOrderField {
 
 export type Review = Node & {
   __typename?: "Review"
-  annictId: Scalars["Int"]
-  body: Scalars["String"]
-  createdAt: Scalars["DateTime"]
-  id: Scalars["ID"]
-  impressionsCount: Scalars["Int"]
-  likesCount: Scalars["Int"]
-  modifiedAt: Maybe<Scalars["DateTime"]>
+  annictId: Scalars["Int"]["output"]
+  body: Scalars["String"]["output"]
+  createdAt: Scalars["DateTime"]["output"]
+  id: Scalars["ID"]["output"]
+  impressionsCount: Scalars["Int"]["output"]
+  likesCount: Scalars["Int"]["output"]
+  modifiedAt: Maybe<Scalars["DateTime"]["output"]>
   ratingAnimationState: Maybe<RatingState>
   ratingCharacterState: Maybe<RatingState>
   ratingMusicState: Maybe<RatingState>
   ratingOverallState: Maybe<RatingState>
   ratingStoryState: Maybe<RatingState>
-  title: Maybe<Scalars["String"]>
-  updatedAt: Scalars["DateTime"]
+  title: Maybe<Scalars["String"]["output"]>
+  updatedAt: Scalars["DateTime"]["output"]
   user: User
   work: Work
 }
@@ -707,7 +718,7 @@ export type ReviewConnection = {
 
 export type ReviewEdge = {
   __typename?: "ReviewEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Review>
 }
 
@@ -730,19 +741,19 @@ export enum SeasonName {
 
 export type Series = Node & {
   __typename?: "Series"
-  annictId: Scalars["Int"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
-  nameRo: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
+  nameRo: Scalars["String"]["output"]
   works: Maybe<SeriesWorkConnection>
 }
 
 export type SeriesworksArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<SeriesWorkOrder>
 }
 
@@ -755,7 +766,7 @@ export type SeriesConnection = {
 
 export type SeriesEdge = {
   __typename?: "SeriesEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Series>
 }
 
@@ -768,10 +779,12 @@ export type SeriesWorkConnection = {
 
 export type SeriesWorkEdge = {
   __typename?: "SeriesWorkEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
+  item: Work
+  /** @deprecated Use `item` instead. */
   node: Work
-  summary: Maybe<Scalars["String"]>
-  summaryEn: Maybe<Scalars["String"]>
+  summary: Maybe<Scalars["String"]["output"]>
+  summaryEn: Maybe<Scalars["String"]["output"]>
 }
 
 export type SeriesWorkOrder = {
@@ -785,15 +798,15 @@ export enum SeriesWorkOrderField {
 
 export type Staff = Node & {
   __typename?: "Staff"
-  annictId: Scalars["Int"]
-  id: Scalars["ID"]
-  name: Scalars["String"]
-  nameEn: Scalars["String"]
+  annictId: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
+  name: Scalars["String"]["output"]
+  nameEn: Scalars["String"]["output"]
   resource: StaffResourceItem
-  roleOther: Scalars["String"]
-  roleOtherEn: Scalars["String"]
-  roleText: Scalars["String"]
-  sortNumber: Scalars["Int"]
+  roleOther: Scalars["String"]["output"]
+  roleOtherEn: Scalars["String"]["output"]
+  roleText: Scalars["String"]["output"]
+  sortNumber: Scalars["Int"]["output"]
   work: Work
 }
 
@@ -806,7 +819,7 @@ export type StaffConnection = {
 
 export type StaffEdge = {
   __typename?: "StaffEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Staff>
 }
 
@@ -824,10 +837,10 @@ export type StaffResourceItem = Organization | Person
 
 export type Status = Node & {
   __typename?: "Status"
-  annictId: Scalars["Int"]
-  createdAt: Scalars["DateTime"]
-  id: Scalars["ID"]
-  likesCount: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
+  createdAt: Scalars["DateTime"]["output"]
+  id: Scalars["ID"]["output"]
+  likesCount: Scalars["Int"]["output"]
   state: StatusState
   user: User
   work: Work
@@ -843,155 +856,155 @@ export enum StatusState {
 }
 
 export type UpdateRecordInput = {
-  clientMutationId: InputMaybe<Scalars["String"]>
-  comment: InputMaybe<Scalars["String"]>
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
+  comment: InputMaybe<Scalars["String"]["input"]>
   ratingState: InputMaybe<RatingState>
-  recordId: Scalars["ID"]
-  shareFacebook: InputMaybe<Scalars["Boolean"]>
-  shareTwitter: InputMaybe<Scalars["Boolean"]>
+  recordId: Scalars["ID"]["input"]
+  shareFacebook: InputMaybe<Scalars["Boolean"]["input"]>
+  shareTwitter: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type UpdateRecordPayload = {
   __typename?: "UpdateRecordPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   record: Maybe<WatchRecord>
 }
 
 export type UpdateReviewInput = {
-  body: Scalars["String"]
-  clientMutationId: InputMaybe<Scalars["String"]>
+  body: Scalars["String"]["input"]
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
   ratingAnimationState: RatingState
   ratingCharacterState: RatingState
   ratingMusicState: RatingState
   ratingOverallState: RatingState
   ratingStoryState: RatingState
-  reviewId: Scalars["ID"]
-  shareFacebook: InputMaybe<Scalars["Boolean"]>
-  shareTwitter: InputMaybe<Scalars["Boolean"]>
-  title: InputMaybe<Scalars["String"]>
+  reviewId: Scalars["ID"]["input"]
+  shareFacebook: InputMaybe<Scalars["Boolean"]["input"]>
+  shareTwitter: InputMaybe<Scalars["Boolean"]["input"]>
+  title: InputMaybe<Scalars["String"]["input"]>
 }
 
 export type UpdateReviewPayload = {
   __typename?: "UpdateReviewPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   review: Maybe<Review>
 }
 
 export type UpdateStatusInput = {
-  clientMutationId: InputMaybe<Scalars["String"]>
+  clientMutationId: InputMaybe<Scalars["String"]["input"]>
   state: StatusState
-  workId: Scalars["ID"]
+  workId: Scalars["ID"]["input"]
 }
 
 export type UpdateStatusPayload = {
   __typename?: "UpdateStatusPayload"
-  clientMutationId: Maybe<Scalars["String"]>
+  clientMutationId: Maybe<Scalars["String"]["output"]>
   work: Maybe<Work>
 }
 
 export type User = Node & {
   __typename?: "User"
   activities: Maybe<ActivityConnection>
-  annictId: Scalars["Int"]
-  avatarUrl: Maybe<Scalars["String"]>
-  backgroundImageUrl: Maybe<Scalars["String"]>
-  createdAt: Scalars["DateTime"]
-  description: Scalars["String"]
-  email: Maybe<Scalars["String"]>
+  annictId: Scalars["Int"]["output"]
+  avatarUrl: Maybe<Scalars["String"]["output"]>
+  backgroundImageUrl: Maybe<Scalars["String"]["output"]>
+  createdAt: Scalars["DateTime"]["output"]
+  description: Scalars["String"]["output"]
+  email: Maybe<Scalars["String"]["output"]>
   followers: Maybe<UserConnection>
-  followersCount: Scalars["Int"]
+  followersCount: Scalars["Int"]["output"]
   following: Maybe<UserConnection>
   followingActivities: Maybe<ActivityConnection>
-  followingsCount: Scalars["Int"]
-  id: Scalars["ID"]
+  followingsCount: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
   libraryEntries: Maybe<LibraryEntryConnection>
-  name: Scalars["String"]
-  notificationsCount: Maybe<Scalars["Int"]>
-  onHoldCount: Scalars["Int"]
+  name: Scalars["String"]["output"]
+  notificationsCount: Maybe<Scalars["Int"]["output"]>
+  onHoldCount: Scalars["Int"]["output"]
   programs: Maybe<ProgramConnection>
   records: Maybe<RecordConnection>
-  recordsCount: Scalars["Int"]
-  stopWatchingCount: Scalars["Int"]
-  url: Maybe<Scalars["String"]>
-  username: Scalars["String"]
-  viewerCanFollow: Scalars["Boolean"]
-  viewerIsFollowing: Scalars["Boolean"]
-  wannaWatchCount: Scalars["Int"]
-  watchedCount: Scalars["Int"]
-  watchingCount: Scalars["Int"]
+  recordsCount: Scalars["Int"]["output"]
+  stopWatchingCount: Scalars["Int"]["output"]
+  url: Maybe<Scalars["String"]["output"]>
+  username: Scalars["String"]["output"]
+  viewerCanFollow: Scalars["Boolean"]["output"]
+  viewerIsFollowing: Scalars["Boolean"]["output"]
+  wannaWatchCount: Scalars["Int"]["output"]
+  watchedCount: Scalars["Int"]["output"]
+  watchingCount: Scalars["Int"]["output"]
   works: Maybe<WorkConnection>
 }
 
 export type UseractivitiesArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<ActivityOrder>
 }
 
 export type UserfollowersArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type UserfollowingArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type UserfollowingActivitiesArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<ActivityOrder>
 }
 
 export type UserlibraryEntriesArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<LibraryEntryOrder>
-  seasonFrom: InputMaybe<Scalars["String"]>
-  seasonUntil: InputMaybe<Scalars["String"]>
-  seasons: InputMaybe<Array<Scalars["String"]>>
+  seasonFrom: InputMaybe<Scalars["String"]["input"]>
+  seasonUntil: InputMaybe<Scalars["String"]["input"]>
+  seasons: InputMaybe<Array<Scalars["String"]["input"]>>
   states: InputMaybe<Array<StatusState>>
 }
 
 export type UserprogramsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<ProgramOrder>
-  unwatched: InputMaybe<Scalars["Boolean"]>
+  unwatched: InputMaybe<Scalars["Boolean"]["input"]>
 }
 
 export type UserrecordsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  hasComment: InputMaybe<Scalars["Boolean"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  hasComment: InputMaybe<Scalars["Boolean"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<RecordOrder>
 }
 
 export type UserworksArgs = {
-  after: InputMaybe<Scalars["String"]>
-  annictIds: InputMaybe<Array<Scalars["Int"]>>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  annictIds: InputMaybe<Array<Scalars["Int"]["input"]>>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<WorkOrder>
-  seasons: InputMaybe<Array<Scalars["String"]>>
+  seasons: InputMaybe<Array<Scalars["String"]["input"]>>
   state: InputMaybe<StatusState>
-  titles: InputMaybe<Array<Scalars["String"]>>
+  titles: InputMaybe<Array<Scalars["String"]["input"]>>
 }
 
 export type UserConnection = {
@@ -1003,89 +1016,89 @@ export type UserConnection = {
 
 export type UserEdge = {
   __typename?: "UserEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<User>
 }
 
 export type Work = Node & {
   __typename?: "Work"
-  annictId: Scalars["Int"]
+  annictId: Scalars["Int"]["output"]
   casts: Maybe<CastConnection>
   episodes: Maybe<EpisodeConnection>
-  episodesCount: Scalars["Int"]
-  id: Scalars["ID"]
+  episodesCount: Scalars["Int"]["output"]
+  id: Scalars["ID"]["output"]
   image: Maybe<WorkImage>
-  malAnimeId: Maybe<Scalars["String"]>
+  malAnimeId: Maybe<Scalars["String"]["output"]>
   media: Media
-  noEpisodes: Scalars["Boolean"]
-  officialSiteUrl: Maybe<Scalars["String"]>
-  officialSiteUrlEn: Maybe<Scalars["String"]>
+  noEpisodes: Scalars["Boolean"]["output"]
+  officialSiteUrl: Maybe<Scalars["String"]["output"]>
+  officialSiteUrlEn: Maybe<Scalars["String"]["output"]>
   programs: Maybe<ProgramConnection>
   reviews: Maybe<ReviewConnection>
-  reviewsCount: Scalars["Int"]
-  satisfactionRate: Maybe<Scalars["Float"]>
+  reviewsCount: Scalars["Int"]["output"]
+  satisfactionRate: Maybe<Scalars["Float"]["output"]>
   seasonName: Maybe<SeasonName>
-  seasonYear: Maybe<Scalars["Int"]>
+  seasonYear: Maybe<Scalars["Int"]["output"]>
   seriesList: Maybe<SeriesConnection>
   staffs: Maybe<StaffConnection>
-  syobocalTid: Maybe<Scalars["Int"]>
-  title: Scalars["String"]
-  titleEn: Maybe<Scalars["String"]>
-  titleKana: Maybe<Scalars["String"]>
-  titleRo: Maybe<Scalars["String"]>
-  twitterHashtag: Maybe<Scalars["String"]>
-  twitterUsername: Maybe<Scalars["String"]>
+  syobocalTid: Maybe<Scalars["Int"]["output"]>
+  title: Scalars["String"]["output"]
+  titleEn: Maybe<Scalars["String"]["output"]>
+  titleKana: Maybe<Scalars["String"]["output"]>
+  titleRo: Maybe<Scalars["String"]["output"]>
+  twitterHashtag: Maybe<Scalars["String"]["output"]>
+  twitterUsername: Maybe<Scalars["String"]["output"]>
   viewerStatusState: Maybe<StatusState>
-  watchersCount: Scalars["Int"]
-  wikipediaUrl: Maybe<Scalars["String"]>
-  wikipediaUrlEn: Maybe<Scalars["String"]>
+  watchersCount: Scalars["Int"]["output"]
+  wikipediaUrl: Maybe<Scalars["String"]["output"]>
+  wikipediaUrlEn: Maybe<Scalars["String"]["output"]>
 }
 
 export type WorkcastsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<CastOrder>
 }
 
 export type WorkepisodesArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<EpisodeOrder>
 }
 
 export type WorkprogramsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<ProgramOrder>
 }
 
 export type WorkreviewsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  hasBody: InputMaybe<Scalars["Boolean"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  hasBody: InputMaybe<Scalars["Boolean"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<ReviewOrder>
 }
 
 export type WorkseriesListArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
 }
 
 export type WorkstaffsArgs = {
-  after: InputMaybe<Scalars["String"]>
-  before: InputMaybe<Scalars["String"]>
-  first: InputMaybe<Scalars["Int"]>
-  last: InputMaybe<Scalars["Int"]>
+  after: InputMaybe<Scalars["String"]["input"]>
+  before: InputMaybe<Scalars["String"]["input"]>
+  first: InputMaybe<Scalars["Int"]["input"]>
+  last: InputMaybe<Scalars["Int"]["input"]>
   orderBy: InputMaybe<StaffOrder>
 }
 
@@ -1098,27 +1111,27 @@ export type WorkConnection = {
 
 export type WorkEdge = {
   __typename?: "WorkEdge"
-  cursor: Scalars["String"]
+  cursor: Scalars["String"]["output"]
   node: Maybe<Work>
 }
 
 export type WorkImage = Node & {
   __typename?: "WorkImage"
-  annictId: Maybe<Scalars["Int"]>
-  copyright: Maybe<Scalars["String"]>
-  facebookOgImageUrl: Maybe<Scalars["String"]>
-  id: Scalars["ID"]
-  internalUrl: Maybe<Scalars["String"]>
-  recommendedImageUrl: Maybe<Scalars["String"]>
-  twitterAvatarUrl: Maybe<Scalars["String"]>
-  twitterBiggerAvatarUrl: Maybe<Scalars["String"]>
-  twitterMiniAvatarUrl: Maybe<Scalars["String"]>
-  twitterNormalAvatarUrl: Maybe<Scalars["String"]>
+  annictId: Maybe<Scalars["Int"]["output"]>
+  copyright: Maybe<Scalars["String"]["output"]>
+  facebookOgImageUrl: Maybe<Scalars["String"]["output"]>
+  id: Scalars["ID"]["output"]
+  internalUrl: Maybe<Scalars["String"]["output"]>
+  recommendedImageUrl: Maybe<Scalars["String"]["output"]>
+  twitterAvatarUrl: Maybe<Scalars["String"]["output"]>
+  twitterBiggerAvatarUrl: Maybe<Scalars["String"]["output"]>
+  twitterMiniAvatarUrl: Maybe<Scalars["String"]["output"]>
+  twitterNormalAvatarUrl: Maybe<Scalars["String"]["output"]>
   work: Maybe<Work>
 }
 
 export type WorkImageinternalUrlArgs = {
-  size: Scalars["String"]
+  size: Scalars["String"]["input"]
 }
 
 export type WorkOrder = {
@@ -1134,7 +1147,7 @@ export enum WorkOrderField {
 
 export type queryLibraryQueryVariables = Exact<{
   states: InputMaybe<Array<StatusState> | StatusState>
-  after: InputMaybe<Scalars["String"]>
+  after: InputMaybe<Scalars["String"]["input"]>
 }>
 
 export type queryLibraryQuery = {
@@ -1175,7 +1188,7 @@ export type queryLibraryQuery = {
 }
 
 export type queryWorksQueryVariables = Exact<{
-  workIds: InputMaybe<Array<Scalars["Int"]> | Scalars["Int"]>
+  workIds: InputMaybe<Array<Scalars["Int"]["input"]> | Scalars["Int"]["input"]>
 }>
 
 export type queryWorksQuery = {
@@ -1295,7 +1308,7 @@ export function getSdk(
   return {
     queryLibrary(
       variables?: queryLibraryQueryVariables,
-      requestHeaders?: Dom.RequestInit["headers"]
+      requestHeaders?: GraphQLClientRequestHeaders
     ): Promise<queryLibraryQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
@@ -1309,7 +1322,7 @@ export function getSdk(
     },
     queryWorks(
       variables?: queryWorksQueryVariables,
-      requestHeaders?: Dom.RequestInit["headers"]
+      requestHeaders?: GraphQLClientRequestHeaders
     ): Promise<queryWorksQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
@@ -1323,7 +1336,7 @@ export function getSdk(
     },
     getMe(
       variables?: getMeQueryVariables,
-      requestHeaders?: Dom.RequestInit["headers"]
+      requestHeaders?: GraphQLClientRequestHeaders
     ): Promise<getMeQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
