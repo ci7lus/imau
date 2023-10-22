@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@ci7lus/eslint-config": "^1.2.1",
-    "@emotion/react": "^11.11.1",
     "@mantine/core": "^7.1.5",
     "@mantine/hooks": "^7.1.5",
     "@mantine/notifications": "^7.1.5",
