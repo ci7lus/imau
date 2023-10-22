@@ -139,7 +139,7 @@ export const DoSync = ({
       <Center>
         <Button
           disabled={checks.length === 0}
-          color={checks.length === 0 ? "gray" : isStarted ? "red" : "primary"}
+          color={checks.length === 0 ? "gray" : isStarted ? "red" : undefined}
           onClick={handleSync}
         >
           {isStarted ? "Stop" : "Sync"}
@@ -148,8 +148,18 @@ export const DoSync = ({
       <Space h="md" />
       {isStarted && (
         <Progress.Root size="xl">
-          <Progress.Section color="blue" value={success}></Progress.Section>
-          <Progress.Section color="red" value={failed}></Progress.Section>
+          <Progress.Section
+            color="blue"
+            value={success}
+            striped
+            animated
+          ></Progress.Section>
+          <Progress.Section
+            color="red"
+            value={failed}
+            striped
+            animated
+          ></Progress.Section>
         </Progress.Root>
       )}
       {processing && (
