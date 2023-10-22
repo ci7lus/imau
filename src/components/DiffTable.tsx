@@ -27,13 +27,15 @@ export const DiffTable = ({
   setIgnores: React.Dispatch<React.SetStateAction<number[]>>
   targetService: TargetService
 }) => {
-  const [ignoresSnapshot] = useState(ignores)
+  const [keepsInSort, setKeepsInSort] = useState(new Set<number>())
   const sortedMemo = useMemo(
     () =>
       diffs.sort((_, b) =>
-        ignoresSnapshot.includes(b.work.annictId) ? -1 : 0
+        ignores.includes(b.work.annictId) && !keepsInSort.has(b.work.annictId)
+          ? -1
+          : 0
       ),
-    [diffs, ignoresSnapshot]
+    [diffs, ignores, keepsInSort]
   )
   const getRelationId = useCallback(
     (work: AnimeWork) => {
@@ -113,17 +115,17 @@ export const DiffTable = ({
               </Text>
             </Table.Td>
             <Table.Td>
-              <Text>
-                {target ? (
-                  `${WATCH_STATUS_MAP[target.status]} (${
+              {target ? (
+                <Text>
+                  {`${WATCH_STATUS_MAP[target.status]} (${
                     target.watchedEpisodeCount
-                  })`
-                ) : (
-                  <Text size="sm" color="gray">
-                    No status
-                  </Text>
-                )}
-              </Text>
+                  })`}
+                </Text>
+              ) : (
+                <Text size="sm" c="gray">
+                  No status
+                </Text>
+              )}
             </Table.Td>
             <Table.Td>
               <ActionIcon
@@ -139,6 +141,11 @@ export const DiffTable = ({
                         copiedChecks.add(work.annictId)
                       }
                       return copiedChecks
+                    })
+                    setKeepsInSort((ignores) => {
+                      const copiedIgnores = new Set(ignores)
+                      copiedIgnores.add(work.annictId)
+                      return copiedIgnores
                     })
                     return includes
                       ? ignores.filter((ignore) => ignore !== work.annictId)
