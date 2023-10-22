@@ -66,6 +66,10 @@ export const CheckDiff = ({
     )
   }, [checks, idMap, ignores])
   const handleReset = useCallback(() => {
+    const confirmed = confirm("Are you sure you want to reset?")
+    if (!confirmed) {
+      return
+    }
     setIgnores((ignores) => {
       setChecks((checks) => {
         const copiedChecks = new Set(checks)

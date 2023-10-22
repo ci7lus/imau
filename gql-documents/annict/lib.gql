@@ -1,6 +1,6 @@
-query queryLibrary($states: [StatusState!], $after: String) {
+query queryLibrary($states: [StatusState!], $after: String, $amount: Int) {
   viewer {
-    libraryEntries(states: $states, after: $after) {
+    libraryEntries(states: $states, after: $after, first: $amount) {
       nodes {
         work {
           id

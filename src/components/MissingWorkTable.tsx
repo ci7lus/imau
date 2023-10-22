@@ -36,16 +36,16 @@ export const MissingWorkTable = ({
   )
   return (
     <Table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Title</Table.Th>
+          <Table.Th>Status</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
         {works.map((work) => (
-          <tr key={work.annictId}>
-            <td>
+          <Table.Tr key={work.annictId}>
+            <Table.Td>
               <Anchor
                 href={`https://annict.com/works/${work.annictId}`}
                 target="_blank"
@@ -89,16 +89,16 @@ export const MissingWorkTable = ({
                   </List.Item>
                 )}
               </List>
-            </td>
-            <td>
+            </Table.Td>
+            <Table.Td>
               <Text>
                 {WATCH_STATUS_MAP[work.status]}
                 {!work.noEpisodes && ` (${work.watchedEpisodeCount})`}
               </Text>
-            </td>
-          </tr>
+            </Table.Td>
+          </Table.Tr>
         ))}
-      </tbody>
+      </Table.Tbody>
     </Table>
   )
 }

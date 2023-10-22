@@ -1148,6 +1148,7 @@ export enum WorkOrderField {
 export type queryLibraryQueryVariables = Exact<{
   states: InputMaybe<Array<StatusState> | StatusState>
   after: InputMaybe<Scalars["String"]["input"]>
+  amount: InputMaybe<Scalars["Int"]["input"]>
 }>
 
 export type queryLibraryQuery = {
@@ -1229,9 +1230,9 @@ export type getMeQuery = {
 }
 
 export const queryLibraryDocument = gql`
-  query queryLibrary($states: [StatusState!], $after: String) {
+  query queryLibrary($states: [StatusState!], $after: String, $amount: Int) {
     viewer {
-      libraryEntries(states: $states, after: $after) {
+      libraryEntries(states: $states, after: $after, first: $amount) {
         nodes {
           work {
             id

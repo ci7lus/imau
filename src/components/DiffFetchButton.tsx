@@ -195,6 +195,7 @@ export const DiffFetchButton: React.FC<{
         const result: queryLibraryQuery = await annict.queryLibrary({
           after,
           states: statuses,
+          amount: 100,
         })
         const structedWorks =
           result.viewer?.libraryEntries?.nodes
