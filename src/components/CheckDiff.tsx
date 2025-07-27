@@ -7,16 +7,15 @@ import {
   Title,
 } from "@mantine/core"
 import { useLocalStorage } from "@mantine/hooks"
-import React, { useCallback } from "react"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Eraser } from "tabler-icons-react"
+import { TARGET_SERVICE_MAL, type TargetService } from "../constants"
+import { StatusState } from "../generated/annictGql"
+import type { AnimeWork, StatusDiff } from "../types"
 import { DiffFetchButton } from "./DiffFetchButton"
 import { DiffTable } from "./DiffTable"
 import { DoSync } from "./DoSync"
 import { MissingWorkTable } from "./MissingWorkTable"
-import { StatusState } from "../annictGql"
-import { TargetService, TARGET_SERVICE_MAL } from "../constants"
-import { AnimeWork, StatusDiff } from "../types"
 
 export const CheckDiff = ({
   annictAccessToken,

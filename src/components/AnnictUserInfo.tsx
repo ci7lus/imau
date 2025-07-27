@@ -1,6 +1,5 @@
 import { Avatar, Box, Center, Flex, Text } from "@mantine/core"
 import { memo, useEffect } from "react"
-import React from "react"
 import { useQuery } from "react-query"
 import { generateGqlClient } from "../annictApiEntry"
 

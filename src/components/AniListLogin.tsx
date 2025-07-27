@@ -1,8 +1,7 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import React from "react"
-import { AniListUserInfo } from "./AniListUserInfo"
 import { generateRandomString } from "../utils"
+import { AniListUserInfo } from "./AniListUserInfo"
 
 export const AniListLogin = ({
   aniListAccessToken,
@@ -14,15 +13,16 @@ export const AniListLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const ANILIST_CLIENT_ID = import.meta.env.VITE_ANILIST_CLIENT_ID
-    const ANILIST_REDIRECT_URL = import.meta.env.VITE_ANILIST_REDIRECT_URL
+    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
     if (
       typeof ANILIST_CLIENT_ID !== "string" ||
-      typeof ANILIST_REDIRECT_URL !== "string"
+      typeof DEPLOY_PRIME_URL !== "string"
     ) {
       return
     }
     const challenge = generateRandomString(50)
     const state = generateRandomString(10)
+    // biome-ignore lint/suspicious/noDocumentCookie: cookie
     document.cookie = `challlange=${challenge}`
     sessionStorage.setItem(state, challenge)
     const url = new URL("https://anilist.co/api/v2/oauth/authorize")
@@ -31,7 +31,10 @@ export const AniListLogin = ({
     url.searchParams.set("state", state)
     url.searchParams.set("code_challenge", challenge)
     url.searchParams.set("code_challenge_method", "plain")
-    url.searchParams.set("redirect_uri", ANILIST_REDIRECT_URL)
+    url.searchParams.set(
+      "redirect_uri",
+      `${DEPLOY_PRIME_URL}/.netlify/functions/anilist-callback`
+    )
     return url.href
   }, [])
 

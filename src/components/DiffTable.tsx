@@ -1,16 +1,16 @@
 import { ActionIcon, Anchor, Checkbox, Table, Text } from "@mantine/core"
+import type React from "react"
 import { useCallback, useMemo, useState } from "react"
-import React from "react"
 import { Forbid } from "tabler-icons-react"
 import {
+  TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
   TARGET_SERVICE_NAMES,
   TARGET_SERVICE_URLS,
-  TargetService,
+  type TargetService,
   WATCH_STATUS_MAP,
-  TARGET_SERVICE_MAL,
-  TARGET_SERVICE_ANILIST,
 } from "../constants"
-import { AnimeWork, StatusDiff } from "../types"
+import type { AnimeWork, StatusDiff } from "../types"
 
 export const DiffTable = ({
   diffs,
@@ -90,23 +90,20 @@ export const DiffTable = ({
               >
                 {`${work.title} (${work.annictId})`}
               </Anchor>
-
-              <>
-                <br />
-                <Anchor
-                  href={`${TARGET_SERVICE_URLS[targetService]}${getRelationId(
-                    work
-                  )}`}
-                  target="_blank"
-                  size="sm"
-                >
-                  {target
-                    ? `${target.title} (${getRelationId(work)})`
-                    : `${TARGET_SERVICE_URLS[targetService]}${getRelationId(
-                        work
-                      )}`}
-                </Anchor>
-              </>
+              <br />
+              <Anchor
+                href={`${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                  work
+                )}`}
+                target="_blank"
+                size="sm"
+              >
+                {target
+                  ? `${target.title} (${getRelationId(work)})`
+                  : `${TARGET_SERVICE_URLS[targetService]}${getRelationId(
+                      work
+                    )}`}
+              </Anchor>
             </Table.Td>
             <Table.Td>
               <Text>

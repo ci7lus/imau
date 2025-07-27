@@ -1,4 +1,4 @@
-import { StatusState } from "./annictGql"
+import type { StatusState } from "./generated/annictGql"
 
 export type AnimeWork = {
   annictId: number

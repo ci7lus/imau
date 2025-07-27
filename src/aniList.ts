@@ -1,5 +1,5 @@
-import { MediaListStatus } from "./aniListGql"
-import { StatusState } from "./annictGql"
+import { MediaListStatus } from "./generated/aniListGql"
+import { StatusState } from "./generated/annictGql"
 
 export const ANILIST_TO_ANNICT_STATUS_MAP: {
   [key in MediaListStatus]: keyof typeof StatusState

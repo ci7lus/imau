@@ -1,17 +1,17 @@
 import { Anchor, Button, Center, Progress, Space, Text } from "@mantine/core"
+import type React from "react"
 import { useCallback, useRef, useState } from "react"
-import React from "react"
 import { ANNICT_TO_ANILIST_STATUS_MAP } from "../aniList"
 import { generateGqlClient } from "../aniListApiEntry"
-import { StatusState } from "../annictGql"
 import {
-  TARGET_SERVICE_URLS,
-  TargetService,
-  TARGET_SERVICE_MAL,
   TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_URLS,
+  type TargetService,
 } from "../constants"
+import { StatusState } from "../generated/annictGql"
 import { ANNICT_TO_MAL_STATUS_MAP, MALAPI } from "../mal"
-import { AnimeWork, StatusDiff } from "../types"
+import type { AnimeWork, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
 export const DoSync = ({

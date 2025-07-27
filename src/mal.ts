@@ -1,5 +1,5 @@
-import axios, { Axios } from "axios"
-import { StatusState } from "./annictGql"
+import axios, { type Axios } from "axios"
+import { StatusState } from "./generated/annictGql"
 
 export type MALAnimeStatus =
   | "watching"

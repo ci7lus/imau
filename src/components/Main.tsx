@@ -6,19 +6,18 @@ import {
   Text,
 } from "@mantine/core"
 import { useLocalStorage } from "@mantine/hooks"
-import React from "react"
 import { useState } from "react"
+import {
+  TARGET_SERVICE_ANILIST,
+  TARGET_SERVICE_MAL,
+  TARGET_SERVICE_NAMES,
+  type TargetService,
+} from "../constants"
 import { AniListLogin } from "./AniListLogin"
 import { AnnictLogin } from "./AnnictLogin"
 import { CheckDiff } from "./CheckDiff"
 import { FirstView } from "./FirstView"
 import { MALLogin } from "./MALLogin"
-import {
-  TARGET_SERVICE_ANILIST,
-  TARGET_SERVICE_MAL,
-  TARGET_SERVICE_NAMES,
-  TargetService,
-} from "../constants"
 
 export const Main = () => {
   const [annictToken, setAnnictToken] = useLocalStorage<string>({

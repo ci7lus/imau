@@ -1,6 +1,5 @@
-import { Box, Center, Avatar, Text, Flex } from "@mantine/core"
+import { Avatar, Box, Center, Flex, Text } from "@mantine/core"
 import { memo, useEffect } from "react"
-import React from "react"
 import { useQuery } from "react-query"
 import { MALAPI } from "../mal"
 
