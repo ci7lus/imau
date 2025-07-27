@@ -12,10 +12,10 @@ export const AnnictLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const ANNICT_CLIENT_ID = import.meta.env.VITE_ANNICT_CLIENT_ID
-    const ANNICT_REDIRECT_URL = import.meta.env.VITE_ANNICT_REDIRECT_URL
+    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
     if (
       typeof ANNICT_CLIENT_ID !== "string" ||
-      typeof ANNICT_REDIRECT_URL !== "string"
+      typeof DEPLOY_PRIME_URL !== "string"
     ) {
       return
     }
@@ -23,7 +23,10 @@ export const AnnictLogin = ({
       "https://api.annict.com/oauth/authorize?response_type=code"
     )
     url.searchParams.set("client_id", ANNICT_CLIENT_ID)
-    url.searchParams.set("redirect_uri", ANNICT_REDIRECT_URL)
+    url.searchParams.set(
+      "redirect_uri",
+      `${DEPLOY_PRIME_URL}/.netlify/functions/annict-callback`
+    )
     return url.href
   }, [])
 

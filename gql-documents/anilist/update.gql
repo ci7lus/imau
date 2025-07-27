@@ -1,17 +1,33 @@
-mutation createMediaStatus($id: Int!, $status: MediaListStatus!, $numWatchedEpisodes: Int!) {
-    SaveMediaListEntry(mediaId: $id, status: $status, progress: $numWatchedEpisodes) {
-        id
-    }
+mutation createMediaStatus(
+  $id: Int!
+  $status: MediaListStatus!
+  $numWatchedEpisodes: Int!
+) {
+  SaveMediaListEntry(
+    mediaId: $id
+    status: $status
+    progress: $numWatchedEpisodes
+  ) {
+    id
+  }
 }
 
-mutation updateMediaStatus($id: Int!, $status: MediaListStatus!, $numWatchedEpisodes: Int!) {
-    UpdateMediaListEntries(ids: [$id], status: $status, progress: $numWatchedEpisodes) {
-        id
-    }
+mutation updateMediaStatus(
+  $id: Int!
+  $status: MediaListStatus!
+  $numWatchedEpisodes: Int!
+) {
+  UpdateMediaListEntries(
+    ids: [$id]
+    status: $status
+    progress: $numWatchedEpisodes
+  ) {
+    id
+  }
 }
 
 mutation deleteMediaStatus($id: Int!) {
-    DeleteMediaListEntry(id: $id) {
-        deleted
-    }
+  DeleteMediaListEntry(id: $id) {
+    deleted
+  }
 }

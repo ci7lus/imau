@@ -9,9 +9,10 @@
       "anilist*",
       "annict*",
       "*.json",
-      ".github",
-      "gql-documents",
-      "netlify"
+      ".github/**/*",
+      "gql-documents/**/*",
+      "netlify/**/*",
+      "*.ts"
     ]
   },
   "formatter": {

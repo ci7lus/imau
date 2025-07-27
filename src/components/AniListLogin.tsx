@@ -13,10 +13,10 @@ export const AniListLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const ANILIST_CLIENT_ID = import.meta.env.VITE_ANILIST_CLIENT_ID
-    const ANILIST_REDIRECT_URL = import.meta.env.VITE_ANILIST_REDIRECT_URL
+    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
     if (
       typeof ANILIST_CLIENT_ID !== "string" ||
-      typeof ANILIST_REDIRECT_URL !== "string"
+      typeof DEPLOY_PRIME_URL !== "string"
     ) {
       return
     }
@@ -31,7 +31,10 @@ export const AniListLogin = ({
     url.searchParams.set("state", state)
     url.searchParams.set("code_challenge", challenge)
     url.searchParams.set("code_challenge_method", "plain")
-    url.searchParams.set("redirect_uri", ANILIST_REDIRECT_URL)
+    url.searchParams.set(
+      "redirect_uri",
+      `${DEPLOY_PRIME_URL}/.netlify/functions/anilist-callback`
+    )
     return url.href
   }, [])
 

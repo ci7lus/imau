@@ -1,16 +1,24 @@
-import { Handler } from "@netlify/functions"
+import type { Handler, HandlerResponse } from "@netlify/functions"
 import axios from "axios"
 import cookie from "cookie"
 
-const handler: Handler = async (event) => {
+const clientId = process.env.VITE_MAL_CLIENT_ID
+const clientSecret = process.env.MAL_CLIENT_SECRET
+const deployUrl = process.env.DEPLOY_PRIME_URL
+if (!clientId || !clientSecret || !deployUrl) {
+  throw new Error("Missing environment variables")
+}
+const redirectUrl = `${deployUrl}/.netlify/functions/mal-callback`
+
+const handler: Handler = async (event): Promise<HandlerResponse> => {
+  if (!event.queryStringParameters) {
+    return { statusCode: 400 }
+  }
   const { code, state, error } = event.queryStringParameters
   if (typeof error === "string") {
     return {
       statusCode: 403,
       body: "access denied.",
-      headers: {
-        Location: "/",
-      },
     }
   }
   if (typeof code !== "string" || typeof state !== "string") {
@@ -32,18 +40,20 @@ const handler: Handler = async (event) => {
     new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      client_id: process.env.VITE_MAL_CLIENT_ID,
-      client_secret: process.env.MAL_CLIENT_SECRET,
-      redirect_uri: process.env.VITE_MAL_REDIRECT_URL,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUrl,
       code_verifier: challange,
     }),
     {
       headers: {
         "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
       },
+      validateStatus: () => true,
     }
   )
   if (typeof result.data.access_token !== "string") {
+    console.warn(result.data)
     return {
       statusCode: 400,
       body: "try again",
@@ -54,7 +64,7 @@ const handler: Handler = async (event) => {
     headers: {
       "Content-Type": "text/html",
     },
-    body: `<script>localStorage.setItem("MAL_ACCESS_TOKEN", ${JSON.stringify(result.data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`
+    body: `<script>localStorage.setItem("MAL_ACCESS_TOKEN", ${JSON.stringify(result.data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`,
   }
 }
 

@@ -13,10 +13,10 @@ export const MALLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const MAL_CLIENT_ID = import.meta.env.VITE_MAL_CLIENT_ID
-    const MAL_REDIRECT_URL = import.meta.env.VITE_MAL_REDIRECT_URL
+    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
     if (
       typeof MAL_CLIENT_ID !== "string" ||
-      typeof MAL_REDIRECT_URL !== "string"
+      typeof DEPLOY_PRIME_URL !== "string"
     ) {
       return
     }
@@ -31,7 +31,10 @@ export const MALLogin = ({
     url.searchParams.set("state", state)
     url.searchParams.set("code_challenge", challenge)
     url.searchParams.set("code_challenge_method", "plain")
-    url.searchParams.set("redirect_uri", MAL_REDIRECT_URL)
+    url.searchParams.set(
+      "redirect_uri",
+      `${DEPLOY_PRIME_URL}/.netlify/functions/mal-callback`
+    )
     return url.href
   }, [])
 
