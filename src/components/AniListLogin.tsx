@@ -1,6 +1,6 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import { generateRandomString } from "../utils"
+import { generateRandomString, isProduction } from "../utils"
 import { AniListUserInfo } from "./AniListUserInfo"
 
 export const AniListLogin = ({
@@ -13,10 +13,12 @@ export const AniListLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const ANILIST_CLIENT_ID = import.meta.env.VITE_ANILIST_CLIENT_ID
-    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
+    const deployUrl = isProduction
+      ? import.meta.env.URL
+      : import.meta.env.DEPLOY_PRIME_URL
     if (
       typeof ANILIST_CLIENT_ID !== "string" ||
-      typeof DEPLOY_PRIME_URL !== "string"
+      typeof deployUrl !== "string"
     ) {
       return
     }
@@ -33,7 +35,7 @@ export const AniListLogin = ({
     url.searchParams.set("code_challenge_method", "plain")
     url.searchParams.set(
       "redirect_uri",
-      `${DEPLOY_PRIME_URL}/.netlify/functions/anilist-callback`
+      `${deployUrl}/.netlify/functions/anilist-callback`
     )
     return url.href
   }, [])

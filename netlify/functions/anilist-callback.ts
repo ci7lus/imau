@@ -4,7 +4,10 @@ import cookie from "cookie"
 
 const clientId = process.env.VITE_ANILIST_CLIENT_ID
 const clientSecret = process.env.ANILIST_CLIENT_SECRET
-const deployUrl = process.env.DEPLOY_PRIME_URL
+const deployUrl =
+  process.env.CONTEXT === "production"
+    ? process.env.URL
+    : process.env.DEPLOY_PRIME_URL
 if (!clientId || !clientSecret || !deployUrl) {
   throw new Error("Missing environment variables")
 }

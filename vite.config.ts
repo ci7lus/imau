@@ -5,6 +5,8 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react()],
   define: {
+    "import.meta.env.URL": JSON.stringify(process.env.URL),
+    "import.meta.env.CONTEXT": JSON.stringify(process.env.CONTEXT),
     "import.meta.env.DEPLOY_PRIME_URL": JSON.stringify(
       process.env.DEPLOY_PRIME_URL
     ),

@@ -1,6 +1,6 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import { generateRandomString } from "../utils"
+import { generateRandomString, isProduction } from "../utils"
 import { MALUserInfo } from "./MALUserInfo"
 
 export const MALLogin = ({
@@ -13,11 +13,10 @@ export const MALLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const MAL_CLIENT_ID = import.meta.env.VITE_MAL_CLIENT_ID
-    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
-    if (
-      typeof MAL_CLIENT_ID !== "string" ||
-      typeof DEPLOY_PRIME_URL !== "string"
-    ) {
+    const deployUrl = isProduction
+      ? import.meta.env.URL
+      : import.meta.env.DEPLOY_PRIME_URL
+    if (typeof MAL_CLIENT_ID !== "string" || typeof deployUrl !== "string") {
       return
     }
     const challenge = generateRandomString(50)
@@ -33,7 +32,7 @@ export const MALLogin = ({
     url.searchParams.set("code_challenge_method", "plain")
     url.searchParams.set(
       "redirect_uri",
-      `${DEPLOY_PRIME_URL}/.netlify/functions/mal-callback`
+      `${deployUrl}/.netlify/functions/mal-callback`
     )
     return url.href
   }, [])

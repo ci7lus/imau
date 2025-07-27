@@ -1,5 +1,6 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
+import { isProduction } from "../utils"
 import { AnnictUserInfo } from "./AnnictUserInfo"
 
 export const AnnictLogin = ({
@@ -12,11 +13,10 @@ export const AnnictLogin = ({
 }) => {
   const authUrl = useMemo(() => {
     const ANNICT_CLIENT_ID = import.meta.env.VITE_ANNICT_CLIENT_ID
-    const DEPLOY_PRIME_URL = import.meta.env.DEPLOY_PRIME_URL
-    if (
-      typeof ANNICT_CLIENT_ID !== "string" ||
-      typeof DEPLOY_PRIME_URL !== "string"
-    ) {
+    const deployUrl = isProduction
+      ? import.meta.env.URL
+      : import.meta.env.DEPLOY_PRIME_URL
+    if (typeof ANNICT_CLIENT_ID !== "string" || typeof deployUrl !== "string") {
       return
     }
     const url = new URL(
@@ -25,7 +25,7 @@ export const AnnictLogin = ({
     url.searchParams.set("client_id", ANNICT_CLIENT_ID)
     url.searchParams.set(
       "redirect_uri",
-      `${DEPLOY_PRIME_URL}/.netlify/functions/annict-callback`
+      `${deployUrl}/.netlify/functions/annict-callback`
     )
     return url.href
   }, [])
