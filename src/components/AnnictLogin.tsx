@@ -1,6 +1,5 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import React from "react"
 import { AnnictUserInfo } from "./AnnictUserInfo"
 
 export const AnnictLogin = ({

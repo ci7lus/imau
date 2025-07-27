@@ -1,14 +1,13 @@
 import { Anchor, List, Table, Text } from "@mantine/core"
-import React from "react"
 import { useCallback } from "react"
 import {
-  TargetService,
   TARGET_SERVICE_ANILIST,
   TARGET_SERVICE_MAL,
   TARGET_SERVICE_NAMES,
+  type TargetService,
   WATCH_STATUS_MAP,
 } from "../constants"
-import { AnimeWork } from "../types"
+import type { AnimeWork } from "../types"
 
 export const MissingWorkTable = ({
   works,

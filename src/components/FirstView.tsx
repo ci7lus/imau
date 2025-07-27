@@ -1,5 +1,4 @@
 import { Anchor, Space, Text, Title } from "@mantine/core"
-import React from "react"
 
 export const FirstView = () => {
   return (

@@ -1,8 +1,7 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import React from "react"
-import { MALUserInfo } from "./MALUserInfo"
 import { generateRandomString } from "../utils"
+import { MALUserInfo } from "./MALUserInfo"
 
 export const MALLogin = ({
   malAccessToken,
@@ -23,6 +22,7 @@ export const MALLogin = ({
     }
     const challenge = generateRandomString(50)
     const state = generateRandomString(10)
+    // biome-ignore lint/suspicious/noDocumentCookie: cookie
     document.cookie = `challlange=${challenge}`
     sessionStorage.setItem(state, challenge)
     const url = new URL("https://myanimelist.net/v1/oauth2/authorize")

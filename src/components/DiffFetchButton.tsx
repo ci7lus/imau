@@ -2,16 +2,16 @@ import { Button } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import axios from "axios"
 import { ClientError } from "graphql-request"
-import React from "react"
+import type React from "react"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { ANILIST_TO_ANNICT_STATUS_MAP } from "../aniList"
 import { generateGqlClient as generateAniListGqlClient } from "../aniListApiEntry"
-import { MediaListSort, MediaListStatus } from "../aniListGql"
 import { generateGqlClient } from "../annictApiEntry"
-import { queryLibraryQuery, StatusState } from "../annictGql"
-import { TARGET_SERVICE_MAL, TargetService } from "../constants"
+import { TARGET_SERVICE_MAL, type TargetService } from "../constants"
+import { MediaListSort, MediaListStatus } from "../generated/aniListGql"
+import { type queryLibraryQuery, StatusState } from "../generated/annictGql"
 import { MAL_TO_ANNICT_STATUS_MAP, MALAPI } from "../mal"
-import { AnimeWork, ServiceStatus, StatusDiff } from "../types"
+import type { AnimeWork, ServiceStatus, StatusDiff } from "../types"
 import { sleep } from "../utils"
 
 export const DiffFetchButton: React.FC<{
@@ -360,7 +360,7 @@ export const DiffFetchButton: React.FC<{
       setMissingWorks(missingWorks)
     } catch (error) {
       console.error(error)
-      let message: string | undefined = undefined
+      let message: string | undefined
       if (error instanceof ClientError) {
         message = `Annict returns ${error.response.status}`
       } else if (error instanceof Error) {

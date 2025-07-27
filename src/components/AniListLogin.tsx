@@ -1,8 +1,7 @@
 import { Button, SimpleGrid } from "@mantine/core"
 import { useMemo } from "react"
-import React from "react"
-import { AniListUserInfo } from "./AniListUserInfo"
 import { generateRandomString } from "../utils"
+import { AniListUserInfo } from "./AniListUserInfo"
 
 export const AniListLogin = ({
   aniListAccessToken,
@@ -23,6 +22,7 @@ export const AniListLogin = ({
     }
     const challenge = generateRandomString(50)
     const state = generateRandomString(10)
+    // biome-ignore lint/suspicious/noDocumentCookie: cookie
     document.cookie = `challlange=${challenge}`
     sessionStorage.setItem(state, challenge)
     const url = new URL("https://anilist.co/api/v2/oauth/authorize")

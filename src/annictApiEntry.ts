@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request"
-import { getSdk } from "./annictGql"
+import { getSdk } from "./generated/annictGql"
 
 export const ANNICT_GRAPHQL_ENDPOINT = "https://api.annict.com/graphql"
 

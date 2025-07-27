@@ -11,15 +11,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint:prettier": "prettier --check './src/**/*.{js,ts,tsx}'",
-    "format:prettier": "prettier --write './src/**/*.{js,ts,tsx}'",
-    "lint:eslint": "eslint --max-warnings 0 --cache './src/**/*.{js,ts,tsx}'",
-    "format:eslint": "eslint './src/**/*.{js,ts,tsx}' --cache --fix",
-    "codegen": "concurrently -n codegen: 'yarn:codegen:*'",
-    "codegen:annict": "graphql-codegen --config ./annict-codegen.yml && yarn format:prettier",
-    "codegen:anilist": "graphql-codegen --config ./anilist-codegen.yml && yarn format:prettier"
+    "lint": "biome lint",
+    "format": "biome format",
+    "check": "biome check",
+    "codegen": "concurrently -n codegen: 'pnpm:codegen:*'",
+    "codegen:annict": "graphql-codegen --config ./annict-codegen.yml && pnpm format",
+    "codegen:anilist": "graphql-codegen --config ./anilist-codegen.yml && pnpm format"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
     "@graphql-codegen/add": "^5.0.0",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/typescript": "^4.0.1",
@@ -30,22 +30,17 @@
     "@types/react-dom": "^18.2.14",
     "@vitejs/plugin-react": "^4.1.0",
     "concurrently": "^8.2.2",
-    "eslint": "^8.52.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
     "postcss": "^8.4.31",
     "postcss-preset-mantine": "^1.9.0",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --max-warnings 0 --cache",
-    "*.{js,ts,tsx,md}": "prettier"
+    "*.{js,ts,tsx}": "biome check"
   },
   "dependencies": {
     "@ci7lus/eslint-config": "^1.2.1",
@@ -56,6 +51,8 @@
     "axios": "^1.5.1",
     "cookie": "^0.5.0",
     "graphql": "^16.8.1",
+    "graphql-request": "^7.2.0",
+    "graphql-tag": "^2.12.6",
     "mal-ts": "^1.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

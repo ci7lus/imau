@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request"
-import { getSdk } from "./aniListGql"
+import { getSdk } from "./generated/aniListGql"
 
 const ANILIST_GRAPHQL_ENDPOINT = "https://graphql.anilist.co"
 

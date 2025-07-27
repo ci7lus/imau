@@ -1,13 +1,12 @@
 import {
-  MantineProvider,
-  Container,
-  Text,
-  Space,
   Anchor,
   Center,
+  Container,
+  MantineProvider,
+  Space,
+  Text,
 } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
-import React from "react"
 import { QueryClientProvider } from "react-query"
 import { Main } from "./components/Main"
 import { queryClient } from "./query"
