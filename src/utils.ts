@@ -13,3 +13,5 @@ export const sleep = (ms: number) =>
   new Promise<void>((res) => {
     setTimeout(() => res(), ms)
   })
+
+export const isProduction = import.meta.env.CONTEXT === "production"
