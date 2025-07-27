@@ -9,9 +9,8 @@ CLI version: [SlashNephy/annict2anilist](https://github.com/SlashNephy/annict2an
 ## dev
 
 ```bash
-npm install -g netlify-cli
-yarn
-netlify dev
+pnpm i
+pnpm netlify dev
 ```
 
 ## "imau" means
