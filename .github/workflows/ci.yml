@@ -15,12 +15,13 @@ jobs:
         node-version: [22.x]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 11
+          cache: true
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
@@ -29,5 +30,7 @@ jobs:
           pnpm i
       - name: Lint
         run: pnpm check
+      - name: Typecheck
+        run: pnpm typecheck
       - name: Build
         run: pnpm build

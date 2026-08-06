@@ -1,0 +1,48 @@
+{
+  "version": "5",
+  "remote": {
+    "https://edge.netlify.com/": "fd941d61d88673d5f28aab283fb86fcc50f08a3bc80ee5470498fcfa88c65cfb",
+    "https://edge.netlify.com/bootstrap/config.ts": "6a2ce0e544e15e8f8883a5c18da5948e37fd0f2619f68cb31f3af53c51817025",
+    "https://edge.netlify.com/bootstrap/context.ts": "e97240232121e2f369f6546ce961490f34d961ea1ea54be3ff09633e3f08373f",
+    "https://edge.netlify.com/bootstrap/cookie.ts": "8b0baae708989ca183c6f3b4ab3d029e6abcbc2e43f93edeb0ff447b3bbc3a05",
+    "https://edge.netlify.com/bootstrap/edge_function.ts": "b8253e86aa83c67341f5cfedeba5049d77fbf84dcab7eceff7566b7728ae9b39",
+    "https://edge.netlify.com/bootstrap/globals/types.ts": "eaa6148ded3121d8dee62dd91c86e7fe76601df0f3ca8d7962243a30f4c8935f"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@biomejs/biome@^2.5.7",
+        "npm:@graphql-codegen/add@^7.1.0",
+        "npm:@graphql-codegen/cli@^7.2.0",
+        "npm:@graphql-codegen/typescript-graphql-request@^7.1.0",
+        "npm:@graphql-codegen/typescript-operations@^6.1.5",
+        "npm:@graphql-codegen/typescript@^6.1.0",
+        "npm:@mantine/core@^9.5.1",
+        "npm:@mantine/hooks@^9.5.1",
+        "npm:@mantine/notifications@^9.5.1",
+        "npm:@netlify/functions@^5.3.0",
+        "npm:@types/react-dom@^19.2.4",
+        "npm:@types/react@^19.2.18",
+        "npm:@vitejs/plugin-react@^6.0.5",
+        "npm:concurrently@^10.0.4",
+        "npm:cookie@^2.0.1",
+        "npm:graphql-request@^7.4.0",
+        "npm:graphql-tag@^2.12.7",
+        "npm:graphql@^17.0.2",
+        "npm:husky@^9.1.7",
+        "npm:lint-staged@^17.3.0",
+        "npm:netlify-cli@^27.1.0",
+        "npm:postcss-preset-mantine@^1.18.0",
+        "npm:postcss-simple-vars@^7.0.1",
+        "npm:postcss@^8.5.25",
+        "npm:react-dom@^19.2.8",
+        "npm:react-query@^3.39.3",
+        "npm:react@^19.2.8",
+        "npm:tabler-icons-react@^1.56.0",
+        "npm:ts-node@^10.9.2",
+        "npm:typescript@^7.0.2",
+        "npm:vite@^8.2.0"
+      ]
+    }
+  }
+}

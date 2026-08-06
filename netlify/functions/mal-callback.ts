@@ -1,6 +1,5 @@
 import type { Handler, HandlerResponse } from "@netlify/functions"
-import axios from "axios"
-import cookie from "cookie"
+import { parseCookie } from "cookie"
 
 const clientId = process.env.VITE_MAL_CLIENT_ID
 const clientSecret = process.env.MAL_CLIENT_SECRET
@@ -27,7 +26,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       body: "Bad request",
     }
   }
-  const cookies = cookie.parse(event.headers.cookie || "")
+  const cookies = parseCookie(event.headers.cookie || "")
   const challange = cookies.challlange
   if (!challange) {
     return {
@@ -35,9 +34,13 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       body: "Bad request(challlange not found)",
     }
   }
-  const result = await axios.post(
-    "https://myanimelist.net/v1/oauth2/token",
-    new URLSearchParams({
+  const result = await fetch("https://myanimelist.net/v1/oauth2/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
+    },
+    body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
       client_id: clientId,
@@ -45,15 +48,10 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       redirect_uri: redirectUrl,
       code_verifier: challange,
     }),
-    {
-      headers: {
-        "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
-      },
-      validateStatus: () => true,
-    }
-  )
-  if (typeof result.data.access_token !== "string") {
-    console.warn(result.data)
+  })
+  const data = (await result.json()) as { access_token?: unknown }
+  if (typeof data.access_token !== "string") {
+    console.warn(data)
     return {
       statusCode: 400,
       body: "try again",
@@ -64,7 +62,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
     headers: {
       "Content-Type": "text/html",
     },
-    body: `<script>localStorage.setItem("MAL_ACCESS_TOKEN", ${JSON.stringify(result.data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`,
+    body: `<script>localStorage.setItem("MAL_ACCESS_TOKEN", ${JSON.stringify(data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`,
   }
 }
 
