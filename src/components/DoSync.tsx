@@ -75,11 +75,11 @@ export const DoSync = ({
           }
         } else if (targetService === TARGET_SERVICE_ANILIST && work.aniListId) {
           if (work.status === StatusState.NO_STATE && target?.id) {
-            await aniList.deleteMediaStatus({ id: parseInt(target.id) })
+            await aniList.deleteMediaStatus({ id: parseInt(target.id, 10) })
           } else if (target?.id) {
             // 既存エントリ更新
             await aniList.updateMediaStatus({
-              id: parseInt(target.id),
+              id: parseInt(target.id, 10),
               status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
               numWatchedEpisodes: work.noEpisodes
                 ? work.status === StatusState.WATCHED

@@ -84,7 +84,8 @@ export const DiffFetchButton: React.FC<{
           if (next) {
             const nextUrl = new URL(next)
             const parsedOffset = parseInt(
-              nextUrl.searchParams.get("offset") ?? "NaN"
+              nextUrl.searchParams.get("offset") ?? "NaN",
+              10
             )
             if (!Number.isNaN(parsedOffset)) {
               offset = parsedOffset
@@ -131,18 +132,18 @@ export const DiffFetchButton: React.FC<{
             )
             if (media) {
               result.push(
-                ...media
-                  .map((m) => {
-                    if (
-                      !m?.id ||
-                      !m.media?.title ||
-                      !m.status ||
-                      m.progress === null
-                    ) {
-                      return
-                    }
+                ...media.flatMap((m) => {
+                  if (
+                    !m?.id ||
+                    !m.media?.title ||
+                    !m.status ||
+                    m.progress === null
+                  ) {
+                    return []
+                  }
 
-                    return {
+                  return [
+                    {
                       id: m.media.id.toString(),
                       recordId: m.id.toString(),
                       title:
@@ -152,9 +153,9 @@ export const DiffFetchButton: React.FC<{
                         "",
                       status: ANILIST_TO_ANNICT_STATUS_MAP[m.status],
                       watchedEpisodeCount: m.progress,
-                    }
-                  })
-                  .filter((x): x is Exclude<typeof x, undefined> => !!x)
+                    },
+                  ]
+                })
               )
             }
 
@@ -200,29 +201,27 @@ export const DiffFetchButton: React.FC<{
           amount: 100,
         })
         const structedWorks =
-          result.viewer?.libraryEntries?.nodes
-            ?.map((entry) => {
-              const work = entry?.work
-              if (!work || !work.annictId || !work.title) {
-                return
-              }
-              const w: AnimeWork = {
-                annictId: work.annictId,
-                malId: work.malAnimeId,
-                aniListId: queryAniListIdByAnnictId(work.annictId),
-                title: work.title,
-                titleEn: work.titleEn || null,
-                titleRo: work.titleRo || null,
-                noEpisodes: work.noEpisodes,
-                watchedEpisodeCount:
-                  work?.episodes?.nodes?.filter(
-                    (episode) => episode?.viewerDidTrack
-                  ).length ?? 0,
-                status: work.viewerStatusState || StatusState.NO_STATE,
-              }
-              return w
-            })
-            .filter((work): work is AnimeWork => !!work) || []
+          result.viewer?.libraryEntries?.nodes?.flatMap((entry) => {
+            const work = entry?.work
+            if (!work?.annictId || !work.title) {
+              return []
+            }
+            const w: AnimeWork = {
+              annictId: work.annictId,
+              malId: work.malAnimeId,
+              aniListId: queryAniListIdByAnnictId(work.annictId),
+              title: work.title,
+              titleEn: work.titleEn || null,
+              titleRo: work.titleRo || null,
+              noEpisodes: work.noEpisodes,
+              watchedEpisodeCount:
+                work?.episodes?.nodes?.filter(
+                  (episode) => episode?.viewerDidTrack
+                ).length ?? 0,
+              status: work.viewerStatusState || StatusState.NO_STATE,
+            }
+            return [w]
+          }) || []
         works.push(...structedWorks)
         after = result.viewer?.libraryEntries?.pageInfo?.endCursor ?? null
         if (
@@ -295,19 +294,20 @@ export const DiffFetchButton: React.FC<{
           (serviceWork) =>
             !works.find((work) => serviceWork.id === getTargetWorkId(work))
         )
-        .map((serviceWork) => {
+        .flatMap((serviceWork) => {
           const armRelation = arm.find(
             (entry) => serviceWork.id === getTargetArmId(entry)
           )
-          if (!armRelation || !armRelation.annict_id) {
-            return
+          if (!armRelation?.annict_id) {
+            return []
           }
-          return {
-            ...serviceWork,
-            annict_id: armRelation.annict_id,
-          }
+          return [
+            {
+              ...serviceWork,
+              annict_id: armRelation.annict_id,
+            },
+          ]
         })
-        .filter((x): x is Exclude<typeof x, undefined> => !!x)
 
       const missingWorksAnnictQuery =
         0 < missingInOriginWorks.length
@@ -316,13 +316,13 @@ export const DiffFetchButton: React.FC<{
             })
           : null
 
-      const additionalDiffs: StatusDiff[] = missingInOriginWorks
-        .map((serviceWork) => {
+      const additionalDiffs: StatusDiff[] = missingInOriginWorks.flatMap(
+        (serviceWork) => {
           const work = missingWorksAnnictQuery?.searchWorks?.nodes?.find(
             (work) => work?.annictId === serviceWork.annict_id
           )
           if (!work) {
-            return
+            return []
           }
           const diff: StatusDiff = {
             work: {
@@ -346,9 +346,9 @@ export const DiffFetchButton: React.FC<{
               id: serviceWork.recordId ?? serviceWork.id,
             },
           }
-          return diff
-        })
-        .filter((x): x is Exclude<typeof x, undefined> => !!x)
+          return [diff]
+        }
+      )
 
       diffs.push(...additionalDiffs)
       setDiffs(diffs)
