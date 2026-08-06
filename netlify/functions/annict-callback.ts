@@ -39,7 +39,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       redirect_uri: redirectUrl,
     }),
   })
-  const data = await result.json()
+  const data = (await result.json()) as { access_token?: unknown }
   if (typeof data.access_token !== "string") {
     return {
       statusCode: 400,

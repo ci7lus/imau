@@ -1,5 +1,5 @@
 import type { Handler, HandlerResponse } from "@netlify/functions"
-import cookie from "cookie"
+import { parseCookie } from "cookie"
 
 const clientId = process.env.VITE_ANILIST_CLIENT_ID
 const clientSecret = process.env.ANILIST_CLIENT_SECRET
@@ -26,7 +26,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       body: "Bad request",
     }
   }
-  const cookies = cookie.parse(event.headers.cookie || "")
+  const cookies = parseCookie(event.headers.cookie || "")
   const challange = cookies.challlange
   if (!challange) {
     return {
@@ -49,7 +49,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       code_verifier: challange,
     }),
   })
-  const data = await result.json()
+  const data = (await result.json()) as { access_token?: unknown }
   if (typeof data.access_token !== "string") {
     return {
       statusCode: 400,
