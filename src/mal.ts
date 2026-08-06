@@ -1,4 +1,3 @@
-import axios, { type Axios } from "axios"
 import { StatusState } from "./generated/annictGql"
 
 export type MALAnimeStatus =
@@ -45,16 +44,28 @@ export type MALListStatus = {
 }
 
 export class MALAPI {
-  public client: Axios
-  constructor(public accessToken: string) {
-    this.client = axios.create({
-      headers: { Authorization: `Bearer ${accessToken}` },
-      baseURL: "/mal/",
+  constructor(public accessToken: string) {}
+
+  private request<T>(
+    path: string,
+    init: RequestInit = {}
+  ): Promise<{ data: T }> {
+    return fetch(`/mal/${path}`, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        ...init.headers,
+      },
+    }).then(async (res) => {
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`)
+      }
+      return { data: (await res.json()) as T }
     })
   }
 
   getUsersMe() {
-    return this.client.get<{ name: string; picture: string }>("/users/@me")
+    return this.request<{ name: string; picture: string }>("users/@me")
   }
 
   updateAnimeStatus(options: {
@@ -70,11 +81,16 @@ export class MALAPI {
         .filter(([k, v]) => v && k !== "id")
         .map(([k, v]) => [k, v.toString()])
     )
-    return this.client.patch(`/anime/${options.id}/my_list_status`, payload)
+    return this.request(`anime/${options.id}/my_list_status`, {
+      method: "PATCH",
+      body: payload,
+    })
   }
 
   deleteAnimeStatus(options: { id: string }) {
-    return this.client.delete(`/anime/${options.id}/my_list_status`)
+    return this.request(`anime/${options.id}/my_list_status`, {
+      method: "DELETE",
+    })
   }
 
   getAnimeStatuses(params: {
@@ -85,11 +101,14 @@ export class MALAPI {
     fields?: "list_status"
     nsfw?: "true"
   }) {
-    return this.client.get<{
+    const searchParams = new URLSearchParams(
+      Object.entries(params)
+        .filter((entry) => entry[1] !== undefined)
+        .map(([k, v]) => [k, v.toString()])
+    )
+    return this.request<{
       data: MALListStatus[]
       paging: { next: string }
-    }>("/users/@me/animelist", {
-      params,
-    })
+    }>(`users/@me/animelist?${searchParams}`)
   }
 }

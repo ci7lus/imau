@@ -1,6 +1,5 @@
 import { Button } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
-import axios from "axios"
 import { ClientError } from "graphql-request"
 import type React from "react"
 import { useCallback, useMemo, useRef, useState } from "react"
@@ -52,10 +51,13 @@ export const DiffFetchButton: React.FC<{
     try {
       const serviceStatuses: ServiceStatus[] = []
 
-      const armReq = axios.get<
-        { mal_id?: number; annict_id?: number; anilist_id?: number }[]
-      >(
+      const armReq = fetch(
         "https://cdn.jsdelivr.net/gh/SlashNephy/arm-supplementary@master/dist/arm.json"
+      ).then(
+        (res) =>
+          res.json() as Promise<
+            { mal_id?: number; annict_id?: number; anilist_id?: number }[]
+          >
       )
 
       if (targetService === TARGET_SERVICE_MAL) {
@@ -182,7 +184,7 @@ export const DiffFetchButton: React.FC<{
         serviceStatuses.push(...result.flat())
       }
 
-      const arm = (await armReq).data
+      const arm = await armReq
 
       // Annict のレスポンスには AniList ID が含まれないので arm を利用する
       const queryAniListIdByAnnictId = (annictId: number) =>

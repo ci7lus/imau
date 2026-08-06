@@ -9,6 +9,7 @@
     "url": "git@github.com:ci7lus/imau.git"
   },
   "scripts": {
+    "d": "netlify dev",
     "dev": "vite",
     "build": "vite build",
     "lint": "biome lint",
@@ -43,17 +44,14 @@
     "*.{js,ts,tsx}": "biome check"
   },
   "dependencies": {
-    "@ci7lus/eslint-config": "^1.2.1",
     "@mantine/core": "^8.2.1",
     "@mantine/hooks": "^8.2.1",
     "@mantine/notifications": "^8.2.1",
     "@netlify/functions": "^4.1.15",
-    "axios": "^1.11.0",
     "cookie": "^1.0.2",
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
     "graphql-tag": "^2.12.6",
-    "mal-ts": "^1.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-query": "^3.39.3",

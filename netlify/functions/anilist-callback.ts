@@ -1,5 +1,4 @@
 import type { Handler, HandlerResponse } from "@netlify/functions"
-import axios from "axios"
 import cookie from "cookie"
 
 const clientId = process.env.VITE_ANILIST_CLIENT_ID
@@ -35,9 +34,13 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       body: "Bad request(challlange not found)",
     }
   }
-  const result = await axios.post(
-    "https://anilist.co/api/v2/oauth/token",
-    new URLSearchParams({
+  const result = await fetch("https://anilist.co/api/v2/oauth/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
+    },
+    body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
       client_id: clientId,
@@ -45,13 +48,9 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
       redirect_uri: redirectUrl,
       code_verifier: challange,
     }),
-    {
-      headers: {
-        "User-Agent": "imau/1.0 (+https://imau.netlify.app)",
-      },
-    }
-  )
-  if (typeof result.data.access_token !== "string") {
+  })
+  const data = await result.json()
+  if (typeof data.access_token !== "string") {
     return {
       statusCode: 400,
     }
@@ -61,7 +60,7 @@ const handler: Handler = async (event): Promise<HandlerResponse> => {
     headers: {
       "Content-Type": "text/html",
     },
-    body: `<script>localStorage.setItem("ANILIST_ACCESS_TOKEN", ${JSON.stringify(result.data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`,
+    body: `<script>localStorage.setItem("ANILIST_ACCESS_TOKEN", ${JSON.stringify(data.access_token)});history.replaceState({}, document.title, "/");location.reload()</script>`,
   }
 }
 
