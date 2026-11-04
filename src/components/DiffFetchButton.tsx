@@ -35,18 +35,22 @@ export const DiffFetchButton: React.FC<{
 }) => {
   const annict = generateGqlClient(annictAccessToken)
   const mal = useMemo(() => new MALAPI(targetAccessToken), [targetAccessToken])
-  const aniList = useMemo(
-    () => generateAniListGqlClient(targetAccessToken),
-    [targetAccessToken]
-  )
   const [isFetching, setIsFetching] = useState(false)
   const abortRef = useRef(false)
+  const controllerRef = useRef<AbortController | null>(null)
 
   const handleClick = useCallback(async () => {
     if (isFetching) {
       abortRef.current = true
+      controllerRef.current?.abort()
       return
     }
+    const controller = new AbortController()
+    controllerRef.current = controller
+    const aniList = generateAniListGqlClient(
+      targetAccessToken,
+      controller.signal
+    )
     setIsFetching(true)
 
     try {
@@ -263,10 +267,6 @@ export const DiffFetchButton: React.FC<{
               break
             }
             page++
-            await sleep(500)
-          }
-          if (offset + 50 < unresolvedMalIds.length) {
-            await sleep(500)
           }
         }
         mappedWorks = resolveAniListWorks({ works, media })
@@ -324,10 +324,14 @@ export const DiffFetchButton: React.FC<{
       )
       setMissingWorks(missingWorks)
     } catch (error) {
+      if (controller.signal.aborted) {
+        return
+      }
+      controller.abort()
       console.error(error)
       let message: string | undefined
       if (error instanceof ClientError) {
-        message = `Annict returns ${error.response.status}`
+        message = `API returned HTTP ${error.response.status}`
       } else if (error instanceof Error) {
         message = error.message
       }
@@ -338,11 +342,12 @@ export const DiffFetchButton: React.FC<{
         autoClose: false,
       })
     } finally {
+      controller.abort()
+      controllerRef.current = null
       setIsFetching(false)
       abortRef.current = false
     }
   }, [
-    aniList,
     annict,
     ignores,
     isFetching,
@@ -352,6 +357,7 @@ export const DiffFetchButton: React.FC<{
     setMissingWorks,
     statuses,
     targetService,
+    targetAccessToken,
   ])
 
   return (
