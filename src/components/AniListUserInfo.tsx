@@ -15,6 +15,7 @@ export const AniListUserInfo = memo(function AniListUserInfo({
     ["ANILIST_PROFILE", aniListAccessToken],
     () => aniList.getMe(),
     {
+      retry: false,
       cacheTime: 6000,
       staleTime: 6000,
     }

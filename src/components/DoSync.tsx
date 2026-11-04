@@ -36,109 +36,123 @@ export const DoSync = ({
   const [failedWorks, setFailedWorks] = useState<AnimeWork[]>([])
   const [processing, setProcessing] = useState<AnimeWork | null>(null)
 
-  const aniList = generateGqlClient(targetAccessToken)
   const abortRef = useRef(false)
+  const controllerRef = useRef<AbortController | null>(null)
 
   const handleSync = useCallback(async () => {
     if (isStarted) {
       abortRef.current = true
+      controllerRef.current?.abort()
       return
     }
     abortRef.current = false
+    const controller = new AbortController()
+    controllerRef.current = controller
+    const aniList = generateGqlClient(targetAccessToken, controller.signal)
     const mal = new MALAPI(targetAccessToken)
     setCheckCountOnStart(checks.length)
     setSuccessCount(0)
     setFailedCount(0)
     setFailedWorks([])
     setIsStarted(true)
-    for (const annictId of checks) {
-      const diff = diffs.find(({ work }) => work.annictId === annictId)
-      if (!diff) {
-        continue
-      }
-      const { work, target } = diff
-      setProcessing(work)
-      try {
-        if (targetService === TARGET_SERVICE_MAL && work.malId) {
-          if (work.status === StatusState.NO_STATE) {
-            await mal.deleteAnimeStatus({ id: work.malId })
-          } else {
-            await mal.updateAnimeStatus({
-              id: work.malId,
-              status: ANNICT_TO_MAL_STATUS_MAP[work.status],
-              num_watched_episodes: work.noEpisodes
-                ? work.status === StatusState.WATCHED
-                  ? 1
-                  : undefined
-                : work.watchedEpisodeCount,
-            })
-          }
-        } else if (targetService === TARGET_SERVICE_ANILIST && work.aniListId) {
-          if (work.status === StatusState.NO_STATE && target?.id) {
-            await aniList.deleteMediaStatus({ id: parseInt(target.id, 10) })
-          } else if (target?.id) {
-            // 既存エントリ更新
-            await aniList.updateMediaStatus({
-              id: parseInt(target.id, 10),
-              status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
-              numWatchedEpisodes: work.noEpisodes
-                ? work.status === StatusState.WATCHED
-                  ? 1
-                  : 0
-                : work.watchedEpisodeCount,
-            })
-          } else {
-            // 新規エントリ
-            await aniList.createMediaStatus({
-              id: work.aniListId,
-              status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
-              numWatchedEpisodes: work.noEpisodes
-                ? work.status === StatusState.WATCHED
-                  ? 1
-                  : 0
-                : work.watchedEpisodeCount,
-            })
-          }
-        } else {
-          setProcessing(null)
-          setSuccessCount((i) => i + 1)
+    try {
+      for (const annictId of checks) {
+        if (abortRef.current) {
+          break
+        }
+        const diff = diffs.find(({ work }) => work.annictId === annictId)
+        if (!diff) {
           continue
         }
+        const { work, target } = diff
+        setProcessing(work)
+        try {
+          if (targetService === TARGET_SERVICE_MAL && work.malId) {
+            if (work.status === StatusState.NO_STATE) {
+              await mal.deleteAnimeStatus({ id: work.malId })
+            } else {
+              await mal.updateAnimeStatus({
+                id: work.malId,
+                status: ANNICT_TO_MAL_STATUS_MAP[work.status],
+                num_watched_episodes: work.noEpisodes
+                  ? work.status === StatusState.WATCHED
+                    ? 1
+                    : undefined
+                  : work.watchedEpisodeCount,
+              })
+            }
+          } else if (
+            targetService === TARGET_SERVICE_ANILIST &&
+            work.aniListId
+          ) {
+            if (work.status === StatusState.NO_STATE && target?.id) {
+              await aniList.deleteMediaStatus({ id: parseInt(target.id, 10) })
+            } else if (target?.id) {
+              // 既存エントリ更新
+              await aniList.updateMediaStatus({
+                id: parseInt(target.id, 10),
+                status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
+                numWatchedEpisodes: work.noEpisodes
+                  ? work.status === StatusState.WATCHED
+                    ? 1
+                    : 0
+                  : work.watchedEpisodeCount,
+              })
+            } else {
+              // 新規エントリ
+              await aniList.createMediaStatus({
+                id: work.aniListId,
+                status: ANNICT_TO_ANILIST_STATUS_MAP[work.status],
+                numWatchedEpisodes: work.noEpisodes
+                  ? work.status === StatusState.WATCHED
+                    ? 1
+                    : 0
+                  : work.watchedEpisodeCount,
+              })
+            }
+          } else {
+            setProcessing(null)
+            setSuccessCount((i) => i + 1)
+            continue
+          }
 
-        await sleep(500)
-        setSuccessCount((i) => i + 1)
-        setChecks((checks) => {
-          const copied = new Set(checks)
-          copied.delete(work.annictId)
-          return copied
-        })
-      } catch (error) {
-        console.error(error)
-        setFailedWorks((works) => [...works, work])
-        setFailedCount((i) => i + 1)
-        await sleep(500)
+          if (targetService === TARGET_SERVICE_MAL) {
+            await sleep(500)
+          }
+          setSuccessCount((i) => i + 1)
+          setChecks((checks) => {
+            const copied = new Set(checks)
+            copied.delete(work.annictId)
+            return copied
+          })
+        } catch (error) {
+          if (controller.signal.aborted) {
+            break
+          }
+          console.error(error)
+          setFailedWorks((works) => [...works, work])
+          setFailedCount((i) => i + 1)
+          if (targetService === TARGET_SERVICE_MAL) {
+            await sleep(500)
+          }
+        }
+        if (abortRef.current) {
+          break
+        }
       }
-      if (abortRef.current) {
-        break
-      }
+    } finally {
+      controller.abort()
+      controllerRef.current = null
+      setProcessing(null)
+      setIsStarted(false)
     }
-    setProcessing(null)
-    setIsStarted(false)
-  }, [
-    aniList,
-    checks,
-    diffs,
-    isStarted,
-    setChecks,
-    targetAccessToken,
-    targetService,
-  ])
+  }, [checks, diffs, isStarted, setChecks, targetAccessToken, targetService])
 
   return (
     <>
       <Center>
         <Button
-          disabled={checks.length === 0}
+          disabled={!isStarted && checks.length === 0}
           color={checks.length === 0 ? "gray" : isStarted ? "red" : undefined}
           onClick={handleSync}
         >
