@@ -4,7 +4,9 @@ generates:
   ./src/generated/aniListGql.ts:
     plugins:
       - typescript
-      - typescript-operations
+      - typescript-operations:
+          importSchemaTypesFrom: ./src/generated/aniListGql.ts
+          namespacedImportName: SchemaTypes
       - typescript-graphql-request
     config:
       avoidOptionals: true

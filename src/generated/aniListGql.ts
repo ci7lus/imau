@@ -1,12 +1,13 @@
-import { GraphQLClient, RequestOptions } from 'graphql-request';
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+import type * as SchemaTypes from './aniListGql';
+
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -15,9 +16,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  CountryCode: { input: any; output: any; }
-  FuzzyDateInt: { input: any; output: any; }
-  Json: { input: any; output: any; }
+  CountryCode: { input: unknown; output: unknown; }
+  FuzzyDateInt: { input: unknown; output: unknown; }
+  Json: { input: unknown; output: unknown; }
 };
 
 /** Notification for when a activity is liked */
@@ -4670,52 +4671,60 @@ export type YearStats = {
 };
 
 export type QueryLibraryQueryVariables = Exact<{
-  userId: Scalars['Int']['input'];
-  sort: Array<MediaListSort> | MediaListSort;
-  perChunk: Scalars['Int']['input'];
-  chunk: Scalars['Int']['input'];
-  status: MediaListStatus;
+  userId: number;
+  sort: Array<SchemaTypes.MediaListSort> | SchemaTypes.MediaListSort;
+  perChunk: number;
+  chunk: number;
+  status: SchemaTypes.MediaListStatus;
 }>;
 
 
-export type QueryLibraryQuery = { __typename?: 'Query', MediaListCollection: { __typename?: 'MediaListCollection', hasNextChunk: boolean | null, lists: Array<{ __typename?: 'MediaListGroup', entries: Array<{ __typename?: 'MediaList', id: number, progress: number | null, status: MediaListStatus | null, media: { __typename?: 'Media', id: number, idMal: number | null, episodes: number | null, title: { __typename?: 'MediaTitle', english: string | null, romaji: string | null, native: string | null } | null } | null } | null> | null } | null> | null } | null };
+export type QueryLibraryQuery = { MediaListCollection: { hasNextChunk: boolean | null, lists: Array<{ entries: Array<{ id: number, progress: number | null, status: SchemaTypes.MediaListStatus | null, media: { id: number, idMal: number | null, episodes: number | null, title: { english: string | null, romaji: string | null, native: string | null } | null } | null } | null> | null } | null> | null } | null };
 
 export type QueryWorksQueryVariables = Exact<{
-  workIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
+  workIds: Array<number> | number;
 }>;
 
 
-export type QueryWorksQuery = { __typename?: 'Query', MediaList: { __typename?: 'MediaList', status: MediaListStatus | null, progress: number | null, media: { __typename?: 'Media', id: number, idMal: number | null, episodes: number | null, title: { __typename?: 'MediaTitle', english: string | null, romaji: string | null, native: string | null } | null } | null } | null };
+export type QueryWorksQuery = { MediaList: { status: SchemaTypes.MediaListStatus | null, progress: number | null, media: { id: number, idMal: number | null, episodes: number | null, title: { english: string | null, romaji: string | null, native: string | null } | null } | null } | null };
+
+export type QueryMediaByMalIdsQueryVariables = Exact<{
+  malIds: Array<number> | number;
+  page: number;
+}>;
+
+
+export type QueryMediaByMalIdsQuery = { Page: { pageInfo: { hasNextPage: boolean | null } | null, media: Array<{ id: number, idMal: number | null } | null> | null } | null };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeQuery = { __typename?: 'Query', Viewer: { __typename?: 'User', id: number, name: string, avatar: { __typename?: 'UserAvatar', large: string | null } | null } | null };
+export type GetMeQuery = { Viewer: { id: number, name: string, avatar: { large: string | null } | null } | null };
 
 export type CreateMediaStatusMutationVariables = Exact<{
-  id: Scalars['Int']['input'];
-  status: MediaListStatus;
-  numWatchedEpisodes: Scalars['Int']['input'];
+  id: number;
+  status: SchemaTypes.MediaListStatus;
+  numWatchedEpisodes: number;
 }>;
 
 
-export type CreateMediaStatusMutation = { __typename?: 'Mutation', SaveMediaListEntry: { __typename?: 'MediaList', id: number } | null };
+export type CreateMediaStatusMutation = { SaveMediaListEntry: { id: number } | null };
 
 export type UpdateMediaStatusMutationVariables = Exact<{
-  id: Scalars['Int']['input'];
-  status: MediaListStatus;
-  numWatchedEpisodes: Scalars['Int']['input'];
+  id: number;
+  status: SchemaTypes.MediaListStatus;
+  numWatchedEpisodes: number;
 }>;
 
 
-export type UpdateMediaStatusMutation = { __typename?: 'Mutation', UpdateMediaListEntries: Array<{ __typename?: 'MediaList', id: number } | null> | null };
+export type UpdateMediaStatusMutation = { UpdateMediaListEntries: Array<{ id: number } | null> | null };
 
 export type DeleteMediaStatusMutationVariables = Exact<{
-  id: Scalars['Int']['input'];
+  id: number;
 }>;
 
 
-export type DeleteMediaStatusMutation = { __typename?: 'Mutation', DeleteMediaListEntry: { __typename?: 'Deleted', deleted: boolean | null } | null };
+export type DeleteMediaStatusMutation = { DeleteMediaListEntry: { deleted: boolean | null } | null };
 
 
 export const QueryLibraryDocument = gql`
@@ -4764,6 +4773,19 @@ export const QueryWorksDocument = gql`
         native
       }
       episodes
+    }
+  }
+}
+    `;
+export const QueryMediaByMalIdsDocument = gql`
+    query queryMediaByMalIds($malIds: [Int!]!, $page: Int!) {
+  Page(page: $page, perPage: 50) {
+    pageInfo {
+      hasNextPage
+    }
+    media(idMal_in: $malIds, type: ANIME) {
+      id
+      idMal
     }
   }
 }
@@ -4817,6 +4839,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     queryWorks(variables: QueryWorksQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<QueryWorksQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<QueryWorksQuery>({ document: QueryWorksDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'queryWorks', 'query', variables);
+    },
+    queryMediaByMalIds(variables: QueryMediaByMalIdsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<QueryMediaByMalIdsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<QueryMediaByMalIdsQuery>({ document: QueryMediaByMalIdsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'queryMediaByMalIds', 'query', variables);
     },
     getMe(variables?: GetMeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetMeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMeQuery>({ document: GetMeDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'getMe', 'query', variables);

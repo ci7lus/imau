@@ -24,6 +24,7 @@ export type StatusDiff = {
 
 export type ServiceStatus = {
   id: string
+  malId: string | null
   recordId: string | null
   title: string
   status: keyof typeof StatusState

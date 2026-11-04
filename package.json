@@ -16,6 +16,7 @@
     "format": "biome format --fix",
     "check": "biome check",
     "typecheck": "tsc -b",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "codegen": "concurrently -n codegen: 'pnpm:codegen:*'",
     "codegen:annict": "graphql-codegen --config ./annict-codegen.yml && pnpm format",
     "codegen:anilist": "graphql-codegen --config ./anilist-codegen.yml && pnpm format"
