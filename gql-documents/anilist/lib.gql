@@ -51,3 +51,15 @@ query queryWorks($workIds: [Int!]!) {
     }
   }
 }
+
+query queryMediaByMalIds($malIds: [Int!]!, $page: Int!) {
+  Page(page: $page, perPage: 50) {
+    pageInfo {
+      hasNextPage
+    }
+    media(idMal_in: $malIds, type: ANIME) {
+      id
+      idMal
+    }
+  }
+}

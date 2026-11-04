@@ -12,6 +12,7 @@ import { type queryLibraryQuery, StatusState } from "../generated/annictGql"
 import { MAL_TO_ANNICT_STATUS_MAP, MALAPI } from "../mal"
 import type { AnimeWork, ServiceStatus, StatusDiff } from "../types"
 import { sleep } from "../utils"
+import { getUnresolvedMalIds, resolveAniListWorks } from "../workMapping"
 
 export const DiffFetchButton: React.FC<{
   annictAccessToken: string
@@ -51,15 +52,6 @@ export const DiffFetchButton: React.FC<{
     try {
       const serviceStatuses: ServiceStatus[] = []
 
-      const armReq = fetch(
-        "https://cdn.jsdelivr.net/gh/SlashNephy/arm-supplementary@master/dist/arm.json"
-      ).then(
-        (res) =>
-          res.json() as Promise<
-            { mal_id?: number; annict_id?: number; anilist_id?: number }[]
-          >
-      )
-
       if (targetService === TARGET_SERVICE_MAL) {
         let offset = 0
         // eslint-disable-next-line no-constant-condition
@@ -74,6 +66,7 @@ export const DiffFetchButton: React.FC<{
           serviceStatuses.push(
             ...result.data.data.map((d) => ({
               id: d.node.id.toString(),
+              malId: d.node.id.toString(),
               recordId: null,
               title: d.node.title,
               status: MAL_TO_ANNICT_STATUS_MAP[d.list_status.status],
@@ -145,6 +138,7 @@ export const DiffFetchButton: React.FC<{
                   return [
                     {
                       id: m.media.id.toString(),
+                      malId: m.media.idMal?.toString() ?? null,
                       recordId: m.id.toString(),
                       title:
                         m.media.title.english ??
@@ -185,11 +179,9 @@ export const DiffFetchButton: React.FC<{
         serviceStatuses.push(...result.flat())
       }
 
-      const arm = await armReq
-
-      // Annict のレスポンスには AniList ID が含まれないので arm を利用する
-      const queryAniListIdByAnnictId = (annictId: number) =>
-        arm.find((entry) => entry.annict_id === annictId)?.anilist_id ?? null
+      if (abortRef.current) {
+        return
+      }
 
       let after: string | null = null
       const works: AnimeWork[] = []
@@ -209,7 +201,7 @@ export const DiffFetchButton: React.FC<{
             const w: AnimeWork = {
               annictId: work.annictId,
               malId: work.malAnimeId,
-              aniListId: queryAniListIdByAnnictId(work.annictId),
+              aniListId: null,
               title: work.title,
               titleEn: work.titleEn || null,
               titleRo: work.titleRo || null,
@@ -234,7 +226,52 @@ export const DiffFetchButton: React.FC<{
         await sleep(500)
       }
 
-      // 現在有効なターゲットの作品IDなどを取得する関数群
+      if (abortRef.current) {
+        return
+      }
+
+      let mappedWorks = works
+      if (targetService !== TARGET_SERVICE_MAL) {
+        const media = serviceStatuses.map((status) => ({
+          id: Number(status.id),
+          malId: status.malId,
+        }))
+        const unresolvedMalIds = getUnresolvedMalIds({ works, media })
+        for (let offset = 0; offset < unresolvedMalIds.length; offset += 50) {
+          const malIds = unresolvedMalIds.slice(offset, offset + 50)
+          let page = 1
+          while (true) {
+            if (abortRef.current) {
+              return
+            }
+            const response = await aniList.queryMediaByMalIds({ malIds, page })
+            const result = response.Page
+            if (!result?.media || !result.pageInfo) {
+              throw new Error("AniList returned an incomplete media lookup")
+            }
+            media.push(
+              ...result.media.flatMap((entry) =>
+                entry
+                  ? [{ id: entry.id, malId: entry.idMal?.toString() ?? null }]
+                  : []
+              )
+            )
+            if (abortRef.current) {
+              return
+            }
+            if (!result.pageInfo.hasNextPage) {
+              break
+            }
+            page++
+            await sleep(500)
+          }
+          if (offset + 50 < unresolvedMalIds.length) {
+            await sleep(500)
+          }
+        }
+        mappedWorks = resolveAniListWorks({ works, media })
+      }
+
       const getTargetWorkId = (work: AnimeWork): string | null => {
         switch (targetService) {
           case "mal":
@@ -245,20 +282,8 @@ export const DiffFetchButton: React.FC<{
             throw new Error("Unknown target service")
         }
       }
-      const getTargetArmId = (entry: {
-        mal_id?: number
-        anilist_id?: number
-      }): string | null => {
-        switch (targetService) {
-          case "mal":
-            return entry.mal_id?.toString() ?? null
-          default:
-            return entry.anilist_id?.toString() ?? null
-        }
-      }
-
       const missingWorks: AnimeWork[] = []
-      const diffs = works
+      const diffs = mappedWorks
         .map((work) => {
           const workId = getTargetWorkId(work)
           if (!workId) {
@@ -289,68 +314,6 @@ export const DiffFetchButton: React.FC<{
         })
         .filter((diff): diff is StatusDiff => !!diff)
 
-      const missingInOriginWorks = serviceStatuses
-        .filter(
-          (serviceWork) =>
-            !works.find((work) => serviceWork.id === getTargetWorkId(work))
-        )
-        .flatMap((serviceWork) => {
-          const armRelation = arm.find(
-            (entry) => serviceWork.id === getTargetArmId(entry)
-          )
-          if (!armRelation?.annict_id) {
-            return []
-          }
-          return [
-            {
-              ...serviceWork,
-              annict_id: armRelation.annict_id,
-            },
-          ]
-        })
-
-      const missingWorksAnnictQuery =
-        0 < missingInOriginWorks.length
-          ? await annict.queryWorks({
-              workIds: missingInOriginWorks.map(({ annict_id }) => annict_id),
-            })
-          : null
-
-      const additionalDiffs: StatusDiff[] = missingInOriginWorks.flatMap(
-        (serviceWork) => {
-          const work = missingWorksAnnictQuery?.searchWorks?.nodes?.find(
-            (work) => work?.annictId === serviceWork.annict_id
-          )
-          if (!work) {
-            return []
-          }
-          const diff: StatusDiff = {
-            work: {
-              annictId: work.annictId,
-              malId: work.malAnimeId,
-              aniListId: queryAniListIdByAnnictId(work.annictId),
-              title: work.title,
-              titleEn: work.titleEn || null,
-              titleRo: work.titleRo || null,
-              noEpisodes: work.noEpisodes,
-              watchedEpisodeCount:
-                work?.episodes?.nodes?.filter(
-                  (episode) => episode?.viewerDidTrack
-                ).length ?? 0,
-              status: work.viewerStatusState || StatusState.NO_STATE,
-            },
-            target: {
-              status: serviceWork.status,
-              watchedEpisodeCount: serviceWork.watchedEpisodeCount,
-              title: serviceWork.title,
-              id: serviceWork.recordId ?? serviceWork.id,
-            },
-          }
-          return [diff]
-        }
-      )
-
-      diffs.push(...additionalDiffs)
       setDiffs(diffs)
       setChecks(
         new Set(
